@@ -6,7 +6,7 @@
     - [`ObjectId`](#objectid)
     - [`schema`](#schema)
 - [Methods](#methods)
-    - [`connect(config, callback)`](#connectconfig-callback)
+    - [`connect(uri, options, callback)`](#connectconfig-callback)
     - [`count(filter, [options], callback)`](#countfilter-options-callback)
     - [`createIndexes(indexSpecs, [callback])`](#createindexesindexspecs-callback)
     - [`deleteMany(filter, [options], callback)`](#deletemanyfilter-options-callback)
@@ -87,13 +87,12 @@ Kitten.schema = Joi.object().keys({
 
 ## Methods
 
-### `connect(config, callback)`
+### `connect(uri, options, callback)`
 
 Connects to a MongoDB server where:
 
- - `config` - an object with the following keys:
-    - `url` - the connection string passed to `MongoClient.connect`.
-    - `options` - an optional object passed to `MongoClient.connect`.
+ - `uri` - the connection string passed to `MongoClient.connect`.
+ - `options` - an optional object passed to `MongoClient.connect`.
  - `callback` - the callback method using the signature `function (err, db)`
     where:
     - `err` - if the connection failed, the error reason, otherwise `null`.
@@ -410,7 +409,7 @@ cc.validate((err, value) => {
 });
 ```
 
-See: https://github.com/hapijs/joi#validatevalue-schema-options-callback
+See: https://github.com/hapijs/joi/blob/master/API.md#validatevalue-schema-options-callback
 
 ### `validate(input, callback)`
 
@@ -435,4 +434,4 @@ Kitten.validate(data, (err, value) => {
 });
 ```
 
-See: https://github.com/hapijs/joi#validatevalue-schema-options-callback
+See: https://github.com/hapijs/joi/blob/master/API.md#validatevalue-schema-options-callback
