@@ -411,21 +411,6 @@ class MongoModels {
     }
 
 
-    static insertOne() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        args.push(callback);
-        collection.insertOne.apply(collection, args);
-    }
-
-
     static insertMany() {
 
         const args = new Array(arguments.length);
@@ -441,7 +426,7 @@ class MongoModels {
     }
 
 
-    static updateOne() {
+    static insertOne() {
 
         const args = new Array(arguments.length);
         for (let i = 0; i < args.length; ++i) {
@@ -449,24 +434,10 @@ class MongoModels {
         }
 
         const collection = MongoModels.db.collection(this.collection);
-        const filter = args.shift();
-        const update = args.shift();
-        const callback = args.pop();
-        const options = Hoek.applyToDefaults({}, args.pop() || {});
+        const callback = this.resultFactory.bind(this, args.pop());
 
-        args.push(filter);
-        args.push(update);
-        args.push(options);
-        args.push((err, results) => {
-
-            if (err) {
-                return callback(err);
-            }
-
-            callback(null, results.modifiedCount);
-        });
-
-        collection.updateOne.apply(collection, args);
+        args.push(callback);
+        collection.insertOne.apply(collection, args);
     }
 
 
@@ -496,6 +467,35 @@ class MongoModels {
         });
 
         collection.updateMany.apply(collection, args);
+    }
+
+
+    static updateOne() {
+
+        const args = new Array(arguments.length);
+        for (let i = 0; i < args.length; ++i) {
+            args[i] = arguments[i];
+        }
+
+        const collection = MongoModels.db.collection(this.collection);
+        const filter = args.shift();
+        const update = args.shift();
+        const callback = args.pop();
+        const options = Hoek.applyToDefaults({}, args.pop() || {});
+
+        args.push(filter);
+        args.push(update);
+        args.push(options);
+        args.push((err, results) => {
+
+            if (err) {
+                return callback(err);
+            }
+
+            callback(null, results.modifiedCount);
+        });
+
+        collection.updateOne.apply(collection, args);
     }
 
 

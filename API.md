@@ -103,7 +103,9 @@ Connects to a MongoDB server where:
 Counts documents matching a `filter` where:
 
  - `filter` - a filter object used to select the documents to count.
- - `options` - an options object passed to MongoDB's native `count` method.
+ - `options` - an options object passed to MongoDB's native
+   [`count`](https://docs.mongodb.com/manual/reference/method/db.collection.count/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -142,7 +144,9 @@ https://docs.mongodb.org/manual/reference/command/createIndexes/
 Deletes multiple documents and returns the count of deleted documents where:
 
  - `filter` - a filter object used to select the documents to delete.
- - `options` - an options object passed to MongoDB's native `deleteMany` method.
+ - `options` - an options object passed to MongoDB's native
+   [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -154,7 +158,9 @@ Deletes multiple documents and returns the count of deleted documents where:
 Deletes a document and returns the count of deleted documents where:
 
  - `filter` - a filter object used to select the document to delete.
- - `options` - an options object passed to MongoDB's native `deleteOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`deleteOne`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -198,7 +204,9 @@ Kitten.fieldsAdapter('name -email');
 Finds documents where:
 
  - `filter` - a filter object used to select the documents.
- - `options` - an options object passed to MongoDB's native `find` method.
+ - `options` - an options object passed to MongoDB's native
+   [`find`](https://docs.mongodb.com/manual/reference/method/db.collection.find/)
+   method.
  - `callback` - the callback method using the signature `function (err, results)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -211,7 +219,9 @@ Finds a document by `_id` where:
 
  - `id` - is a string value of the `_id` to find. It will be casted to the type
     of `_idClass`.
- - `options` - an options object passed to MongoDB's native `findOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`findOne`](https://docs.mongodb.com/manual/reference/method/db.collection.findOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, result)`
     where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -236,7 +246,8 @@ Finds a document by `_id`, updates it and returns it where:
    of `_idClass`.
  - `update` - an object containing the fields/values to be updated.
  - `options` - an optional options object passed to MongoDB's native
-   `findAndModify` method. Defaults to `{ returnOriginal: false }`.
+   [`findOneAndUpdate`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/)
+   method. Defaults to `{ returnOriginal: false }`.
  - `callback` - the callback method using the signature `function (err, result)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -247,7 +258,9 @@ Finds a document by `_id`, updates it and returns it where:
 Finds one document matching a `filter` where:
 
  - `filter` - a filter object used to select the document.
- - `options` - an options object passed to MongoDB's native `findOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`findOne`](https://docs.mongodb.com/manual/reference/method/db.collection.findOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, result)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -258,7 +271,8 @@ Finds one document matching a `filter` where:
 Finds one document matching a `filter`, deletes it and returns it where:
 
  - `filter` - a filter object used to select the document to delete.
- - `options` - an options object passed to MongoDB's native `findOneAndDelete`
+ - `options` - an options object passed to MongoDB's native
+   [`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/)
    method.
  - `callback` - the callback method using the signature `function (err, result)`
    where:
@@ -271,7 +285,8 @@ Finds one document matching a `filter`, updates it and returns it where:
 
  - `filter` - a filter object used to select the document to update.
  - `update` - an object containing the fields/values to be updated.
- - `options` - an options object passed to MongoDB's native `findOneAndUpdate`
+ - `options` - an options object passed to MongoDB's native
+   [`findOneAndUpdate`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/)
    method. Defaults to `{ returnOriginal: false }`.
  - `callback` - the callback method using the signature `function (err, result)`
    where:
@@ -283,7 +298,9 @@ Finds one document matching a `filter`, updates it and returns it where:
 Inserts multiple documents and returns them where:
 
  - `docs` - an array of document objects to insert.
- - `options` - an options object passed to MongoDB's native `insertMany` method.
+ - `options` - an options object passed to MongoDB's native
+   [`insertMany`](https://docs.mongodb.com/manual/reference/method/db.collection.insertMany/)
+   method.
  - `callback` - the callback method using the signature `function (err, results)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -295,7 +312,9 @@ Inserts multiple documents and returns them where:
 Inserts a document and returns the new document where:
 
  - `doc` - a document object to insert.
- - `options` - an options object passed to MongoDB's native `insertOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`insertOne`](https://docs.mongodb.com/manual/reference/method/db.collection.insertOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, results)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -338,7 +357,9 @@ Replaces a document and returns the count of modified documents where:
 
  - `filter` - a filter object used to select the document to replace.
  - `doc` - the document that replaces the matching document.
- - `options` - an options object passed to MongoDB's native `replaceOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`replaceOne`](https://docs.mongodb.com/manual/reference/method/db.collection.replaceOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -367,7 +388,9 @@ Updates multiple documents and returns the count of modified documents where:
 
  - `filter` - a filter object used to select the documents to update.
  - `update` - the update operations object.
- - `options` - an options object passed to MongoDB's native `updateOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`updateMany`](https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
@@ -380,7 +403,9 @@ Updates a document and returns the count of modified documents where:
 
  - `filter` - a filter object used to select the document to update.
  - `update` - the update operations object.
- - `options` - an options object passed to MongoDB's native `updateOne` method.
+ - `options` - an options object passed to MongoDB's native
+   [`updateOne`](https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/)
+   method.
  - `callback` - the callback method using the signature `function (err, count)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
