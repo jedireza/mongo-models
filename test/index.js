@@ -766,6 +766,43 @@ lab.experiment('MongoModels Proxied Methods', () => {
     });
 
 
+    lab.test('it returns aggregate results from a collection', (done) => {
+
+        Async.auto({
+            setup: function (cb) {
+
+                const testDocs = [
+                    { name: 'Ren', group: 'Friend', count: 100 },
+                    { name: 'Stimpy', group: 'Friend', count: 10 },
+                    { name: 'Yak', group: 'Foe', count: 430 }
+                ];
+
+                SubModel.insertMany(testDocs, cb);
+            }
+        }, (err) => {
+
+            if (err) {
+                return done(err);
+            }
+
+            const pipeline = [
+                { $match: {} },
+                { $group: { _id: '$group', total: { $sum: '$count' } } },
+                { $sort: { total: -1 } }
+            ];
+
+            SubModel.aggregate(pipeline, (err, results) => {
+
+                Code.expect(err).to.not.exist();
+                Code.expect(results[0].total).to.equal(430);
+                Code.expect(results[1].total).to.equal(110);
+
+                done();
+            });
+        });
+    });
+
+
     lab.test('it returns a collection count', (done) => {
 
         Async.auto({

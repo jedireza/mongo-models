@@ -225,6 +225,18 @@ class MongoModels {
     }
 
 
+    static aggregate() {
+
+        const args = new Array(arguments.length);
+        for (let i = 0; i < args.length; ++i) {
+            args[i] = arguments[i];
+        }
+
+        const collection = MongoModels.db.collection(this.collection);
+        collection.aggregate.apply(collection, args);
+    }
+
+
     static count() {
 
         const args = new Array(arguments.length);
