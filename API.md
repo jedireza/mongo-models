@@ -7,6 +7,7 @@
     - [`schema`](#schema)
 - [Methods](#methods)
     - [`connect(uri, options, callback)`](#connectconfig-callback)
+    - [`aggregate(pipeline, [options], callback)`](#aggregatepipeline-options-callback)
     - [`count(filter, [options], callback)`](#countfilter-options-callback)
     - [`createIndexes(indexSpecs, [callback])`](#createindexesindexspecs-callback)
     - [`deleteMany(filter, [options], callback)`](#deletemanyfilter-options-callback)
@@ -97,6 +98,20 @@ Connects to a MongoDB server where:
     where:
     - `err` - if the connection failed, the error reason, otherwise `null`.
     - `db` - if the connection succeeded, the initialized db object.
+
+### `aggregate(pipeline, [options], callback)`
+
+Calculates aggregate values for the data in a collection where:
+
+ - `pipeline` - A sequence of data aggregation operations or stages.
+ - `options` - an options object passed to MongoDB's native
+   [`aggregate`](https://docs.mongodb.com/manual/reference/method/db.collection.aggregate/)
+   method.
+ - `callback` - the callback method using the signature `function (err, results)`
+   where:
+    - `err` - if the query failed, the error reason, otherwise `null`.
+    - `results` - if the query succeeded, an array of documents return from
+      the aggregation.
 
 ### `count(filter, [options], callback)`
 

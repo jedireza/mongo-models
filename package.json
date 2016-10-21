@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/jedireza/mongo-models",
   "devDependencies": {
-    "code": "3.x.x",
+    "code": "4.x.x",
     "lab": "11.x.x",
     "mongodb": "2.x.x",
     "opn-cli": "3.x.x",
