@@ -375,11 +375,16 @@ Replaces a document and returns the count of modified documents where:
  - `options` - an options object passed to MongoDB's native
    [`replaceOne`](https://docs.mongodb.com/manual/reference/method/db.collection.replaceOne/)
    method.
- - `callback` - the callback method using the signature `function (err, count)`
+ - `callback` - the callback method using the signature `function (err, count, result)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
     - `count` - if the query succeeded, a number indicating how many documents
       were modified.
+    - `result` - if the query succeeded, the raw result document returned
+      by MongoDB's native driver, including:
+       - `matchedCount` - number of matched documents
+       - `modifiedCount` - number of modified documents
+       - `upsertedId` - `_id` for the upserted document, if any
 
 ### `sortAdapter(sorts)`
 
@@ -406,11 +411,16 @@ Updates multiple documents and returns the count of modified documents where:
  - `options` - an options object passed to MongoDB's native
    [`updateMany`](https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/)
    method.
- - `callback` - the callback method using the signature `function (err, count)`
+ - `callback` - the callback method using the signature `function (err, count, result)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
     - `count` - if the command succeeded, a number indicating how many documents
       were modified.
+    - `result` - if the query succeeded, the raw result document returned
+          by MongoDB's native driver, including:
+           - `matchedCount` - number of matched documents
+           - `modifiedCount` - number of modified documents
+           - `upsertedId` - `_id` for the upserted document, if any
 
 ### `updateOne(filter, update, [options], callback)`
 
@@ -421,11 +431,16 @@ Updates a document and returns the count of modified documents where:
  - `options` - an options object passed to MongoDB's native
    [`updateOne`](https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/)
    method.
- - `callback` - the callback method using the signature `function (err, count)`
+ - `callback` - the callback method using the signature `function (err, count, result)`
    where:
     - `err` - if the query failed, the error reason, otherwise `null`.
     - `count` - if the command succeeded, a number indicating how many documents
       were modified.
+    - `result` - if the query succeeded, the raw result document returned
+          by MongoDB's native driver, including:
+           - `matchedCount` - number of matched documents
+           - `modifiedCount` - number of modified documents
+           - `upsertedId` - `_id` for the upserted document, if any
 
 ### `validate(callback)`
 
