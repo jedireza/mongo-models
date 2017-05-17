@@ -381,10 +381,7 @@ Replaces a document and returns the count of modified documents where:
     - `count` - if the query succeeded, a number indicating how many documents
       were modified.
     - `result` - if the query succeeded, the raw result document returned
-      by MongoDB's native driver, including:
-       - `matchedCount` - number of matched documents
-       - `modifiedCount` - number of modified documents
-       - `upsertedId` - `_id` for the upserted document, if any
+      by MongoDB's native driver.
 
 ### `sortAdapter(sorts)`
 
@@ -417,10 +414,7 @@ Updates multiple documents and returns the count of modified documents where:
     - `count` - if the command succeeded, a number indicating how many documents
       were modified.
     - `result` - if the query succeeded, the raw result document returned
-          by MongoDB's native driver, including:
-           - `matchedCount` - number of matched documents
-           - `modifiedCount` - number of modified documents
-           - `upsertedId` - `_id` for the upserted document, if any
+          by MongoDB's native driver.
 
 ### `updateOne(filter, update, [options], callback)`
 
@@ -437,10 +431,7 @@ Updates a document and returns the count of modified documents where:
     - `count` - if the command succeeded, a number indicating how many documents
       were modified.
     - `result` - if the query succeeded, the raw result document returned
-          by MongoDB's native driver, including:
-           - `matchedCount` - number of matched documents
-           - `modifiedCount` - number of modified documents
-           - `upsertedId` - `_id` for the upserted document, if any
+          by MongoDB's native driver.
 
 ### `validate(callback)`
 

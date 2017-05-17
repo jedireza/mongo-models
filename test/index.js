@@ -570,10 +570,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(1);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(1);
-                Code.expect(result.modifiedCount).to.equal(1);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
@@ -614,10 +610,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(1);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(1);
-                Code.expect(result.modifiedCount).to.equal(1);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
@@ -695,10 +687,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(3);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(3);
-                Code.expect(result.modifiedCount).to.equal(3);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
@@ -735,10 +723,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(3);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(3);
-                Code.expect(result.modifiedCount).to.equal(3);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
@@ -1205,10 +1189,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(1);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(1);
-                Code.expect(result.modifiedCount).to.equal(1);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
@@ -1241,10 +1221,6 @@ lab.experiment('MongoModels Proxied Methods', () => {
                 Code.expect(count).to.be.a.number();
                 Code.expect(count).to.equal(1);
                 Code.expect(result).to.be.an.object();
-                Code.expect(result).to.include(['matchedCount', 'modifiedCount', 'upsertedId']);
-                Code.expect(result.matchedCount).to.equal(1);
-                Code.expect(result.modifiedCount).to.equal(1);
-                Code.expect(result.upsertedId).to.be.null();
 
                 done(err);
             });
