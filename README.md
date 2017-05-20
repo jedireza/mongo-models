@@ -2,10 +2,10 @@
 
 Map JavaScript classes to MongoDB collections.
 
-[![Build Status](https://travis-ci.org/jedireza/mongo-models.svg?branch=master)](https://travis-ci.org/jedireza/mongo-models)
-[![Dependency Status](https://david-dm.org/jedireza/mongo-models.svg?style=flat)](https://david-dm.org/jedireza/mongo-models)
-[![devDependency Status](https://david-dm.org/jedireza/mongo-models/dev-status.svg?style=flat)](https://david-dm.org/jedireza/mongo-models#info=devDependencies)
-[![peerDependency Status](https://david-dm.org/jedireza/mongo-models/peer-status.svg?style=flat)](https://david-dm.org/jedireza/mongo-models#info=peerDependencies)
+[![Build Status](https://img.shields.io/travis/jedireza/mongo-models.svg)](https://travis-ci.org/jedireza/mongo-models)
+[![Dependency Status](https://img.shields.io/david/jedireza/mongo-models.svg)](https://david-dm.org/jedireza/mongo-models)
+[![devDependency Status](https://img.shields.io/david/dev/jedireza/mongo-models.svg)](https://david-dm.org/jedireza/mongo-models#info=devDependencies)
+[![peerDependency Status](https://img.shields.io/david/peer/jedireza/mongo-models.svg)](https://david-dm.org/jedireza/mongo-models#info=peerDependencies)
 
 [MongoDB](https://github.com/mongodb/node-mongodb-native)'s native driver for
 Node.js is pretty good. We just want a little sugar on top.
