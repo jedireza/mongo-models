@@ -46,23 +46,18 @@ const MongoModels = require('mongo-models');
 
 class Customer extends MongoModels {
     static create(name, email, phone, callback) {
+
       const document = {
           name,
           email,
           phone
       };
 
-      this.insertOne(document, (err, docs) => {
-          if (err) {
-              callback();
-              return;
-          }
-
-          callback(null, docs[0]);
-      });
+      this.insertOne(document, callback);
     }
 
     speak() {
+
         console.log(`${this.name}: call me at ${this.phone}.`);
     }
 }
@@ -88,6 +83,7 @@ const MongoModels = require('mongo-models');
 const app = Express();
 
 MongoModels.connect(process.env.MONGODB_URI, {}, (err, db) => {
+
     if (err) {
         // TODO: throw error or try reconnecting
         return;
@@ -106,13 +102,14 @@ app.post('/customers', (req, res) => {
     const email = req.body.email;
     const phone = req.body.phone;
 
-    Customer.create(name, email, phone, (err, customer) => {
+    Customer.create(name, email, phone, (err, customers) => {
+
         if (err) {
             res.status(500).json({ error: 'something blew up' });
             return;
         }
 
-        res.json(customer);
+        res.json(customers[0]);
     });
 });
 
@@ -123,6 +120,7 @@ app.get('/customers', (req, res) => {
     };
 
     Customer.find(filter, (err, customers) => {
+
         if (err) {
             res.status(500).json({ error: 'something blew up' });
             return;
@@ -133,6 +131,7 @@ app.get('/customers', (req, res) => {
 });
 
 app.server.listen(process.env.PORT, () => {
+
     console.log(`Server is running on port ${process.env.PORT}`);
 });
 ```
