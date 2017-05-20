@@ -475,7 +475,7 @@ class MongoModels {
                 return callback(err);
             }
 
-            callback(null, results.modifiedCount);
+            callback(null, results.modifiedCount, results);
         });
 
         collection.updateMany.apply(collection, args);
@@ -504,7 +504,7 @@ class MongoModels {
                 return callback(err);
             }
 
-            callback(null, results.modifiedCount);
+            callback(null, results.modifiedCount, results);
         });
 
         collection.updateOne.apply(collection, args);
@@ -533,7 +533,7 @@ class MongoModels {
                 return callback(err);
             }
 
-            callback(null, results.modifiedCount);
+            callback(null, results.modifiedCount, results);
         });
 
         collection.replaceOne.apply(collection, args);
