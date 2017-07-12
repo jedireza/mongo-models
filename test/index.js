@@ -576,6 +576,45 @@ lab.experiment('MongoModels Proxied Methods', () => {
         });
     });
 
+    lab.test('it updates a document and returns the results ($isolated)', (done) => {
+
+        Async.auto({
+            setup: function (cb) {
+
+                const testDocs = [
+                    { name: 'Ren' },
+                    { name: 'Stimpy' },
+                    { name: 'Yak' }
+                ];
+
+                SubModel.insertMany(testDocs, cb);
+            }
+        }, (err, results) => {
+
+            if (err) {
+                return done(err);
+            }
+
+            const filter = {
+                _id: results.setup[0]._id,
+                $isolated: 1
+            };
+            const update = {
+                $set: { isCool: true }
+            };
+
+            SubModel.updateOne(filter, update, (err, count, result) => {
+
+                Code.expect(err).to.not.exist();
+                Code.expect(count).to.be.a.number();
+                Code.expect(count).to.equal(1);
+                Code.expect(result).to.be.an.object();
+
+                done(err);
+            });
+        });
+    });
+
 
     lab.test('it updates a document and returns the results (with options)', (done) => {
 
@@ -692,6 +731,42 @@ lab.experiment('MongoModels Proxied Methods', () => {
             });
         });
     });
+
+    lab.test('it updates many documents and returns the results ($isolated)', (done) => {
+
+        Async.auto({
+            setup: function (cb) {
+
+                const testDocs = [
+                    { name: 'Ren' },
+                    { name: 'Stimpy' },
+                    { name: 'Yak' }
+                ];
+
+                SubModel.insertMany(testDocs, cb);
+            }
+        }, (err, results) => {
+
+            if (err) {
+                return done(err);
+            }
+
+            const filter = { $isolated: 1 };
+            const update = { $set: { isCool: true } };
+
+            SubModel.updateMany(filter, update, (err, count, result) => {
+
+                Code.expect(err).to.not.exist();
+                Code.expect(count).to.be.a.number();
+                Code.expect(count).to.equal(3);
+                Code.expect(result).to.be.an.object();
+
+                done(err);
+            });
+        });
+    });
+
+
 
 
     lab.test('it updates many documents and returns the results (with options)', (done) => {
