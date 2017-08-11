@@ -8,6 +8,21 @@ const Mongodb = require('mongodb');
 class MongoModels {
     constructor(attrs) {
 
+        if (this.constructor.constructWithSchema) {
+            this.constructor.validate(attrs, (err, value) => {
+
+                if (err) {
+                    return Object.defineProperty(this, '__err', {
+                        writable: true,
+                        enumerable: false,
+                        value: err
+                    });
+                }
+
+                attrs = value;
+            });
+        }
+
         Object.assign(this, attrs);
     }
 

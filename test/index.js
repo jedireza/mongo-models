@@ -1,13 +1,16 @@
 'use strict';
 const Async = require('async');
 const Code = require('code');
-const Config = require('./config');
 const Joi = require('joi');
 const Lab = require('lab');
 const Proxyquire = require('proxyquire');
 
 
 const lab = exports.lab = Lab.script();
+const config = {
+    uri: 'mongodb://localhost:27017/mongo-models-test',
+    options: {}
+};
 const stub = {
     mongodb: {}
 };
@@ -20,7 +23,7 @@ lab.experiment('MongoModels DB Connection', () => {
 
     lab.test('it connects and disconnects the database', (done) => {
 
-        MongoModels.connect(Config.mongodb.uri, Config.mongodb.options, (err, db) => {
+        MongoModels.connect(config.uri, config.options, (err, db) => {
 
             Code.expect(err).to.not.exist();
             Code.expect(db).to.be.an.object();
@@ -45,7 +48,7 @@ lab.experiment('MongoModels DB Connection', () => {
             }
         };
 
-        MongoModels.connect(Config.mongodb.uri, Config.mongodb.options, (err, db) => {
+        MongoModels.connect(config.uri, config.options, (err, db) => {
 
             Code.expect(err).to.be.an.object();
             Code.expect(db).to.not.exist();
@@ -54,6 +57,82 @@ lab.experiment('MongoModels DB Connection', () => {
 
             done();
         });
+    });
+});
+
+
+lab.experiment('MongoModels Construction', () => {
+
+    lab.test('it constructs an instance using the schema', (done) => {
+
+        const WithSchema = class extends MongoModels {};
+
+        WithSchema.constructWithSchema = true;
+
+        WithSchema.schema = Joi.object().keys({
+            name: Joi.string().required(),
+            stuff: Joi.object().keys({
+                foo: Joi.string().default('foozball'),
+                bar: Joi.string().default('barzball'),
+                baz: Joi.string().default('bazzball')
+            }).default(() => {
+
+                return {
+                    foo: 'llabzoof',
+                    bar: 'llabzrab',
+                    baz: 'llabzzab'
+                };
+            }, 'default stuff')
+        });
+
+        const instance1 = new WithSchema({
+            name: 'Stimpson J. Cat'
+        });
+
+        Code.expect(instance1.name).to.equal('Stimpson J. Cat');
+        Code.expect(instance1.stuff).to.be.an.object();
+        Code.expect(instance1.stuff.foo).to.equal('llabzoof');
+        Code.expect(instance1.stuff.bar).to.equal('llabzrab');
+        Code.expect(instance1.stuff.baz).to.equal('llabzzab');
+
+        const instance2 = new WithSchema({
+            name: 'Stimpson J. Cat',
+            stuff: {
+                foo: 'customfoo'
+            }
+        });
+
+        Code.expect(instance2.name).to.equal('Stimpson J. Cat');
+        Code.expect(instance2.stuff).to.be.an.object();
+        Code.expect(instance2.stuff.foo).to.equal('customfoo');
+        Code.expect(instance2.stuff.bar).to.equal('barzball');
+        Code.expect(instance2.stuff.baz).to.equal('bazzball');
+
+        done();
+    });
+
+
+    lab.test('it populates __err if validation fails when creating an instance using the schema', (done) => {
+
+        const BoomSchema = class extends MongoModels {};
+
+        BoomSchema.schema = Joi.object().keys({
+            name: Joi.string().required()
+        });
+
+        BoomSchema.constructWithSchema = true;
+
+        const blamo = new BoomSchema({});
+
+        Code.expect(blamo.__err).to.be.an.object();
+
+        const hello = new BoomSchema({
+            name: 'World'
+        });
+
+        Code.expect(hello.__err).to.not.exist();
+
+        done();
     });
 });
 
@@ -224,7 +303,7 @@ lab.experiment('MongoModels Indexes', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(Config.mongodb.uri, Config.mongodb.options, (err, db) => {
+        MongoModels.connect(config.uri, config.options, (err, db) => {
 
             done(err);
         });
@@ -295,7 +374,7 @@ lab.experiment('MongoModels Paged Find', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(Config.mongodb.uri, Config.mongodb.options, (err, db) => {
+        MongoModels.connect(config.uri, config.options, (err, db) => {
 
             done(err);
         });
@@ -464,7 +543,7 @@ lab.experiment('MongoModels Proxied Methods', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(Config.mongodb.uri, Config.mongodb.options, (err, db) => {
+        MongoModels.connect(config.uri, config.options, (err, db) => {
 
             done(err);
         });

@@ -5,6 +5,7 @@
   - [`collection`](#collection)
   - [`ObjectId`](#objectid)
   - [`schema`](#schema)
+  - [`constructWithSchema`](#constructwithschema)
 - [Methods](#methods)
   - [`connect(uri, options, callback)`](#connectconfig-callback)
   - [`aggregate(pipeline, [options], callback)`](#aggregatepipeline-options-callback)
@@ -83,6 +84,42 @@ Kitten.schema = Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().required()
 });
+```
+
+### `constructWithSchema`
+
+A boolean indicating if new instances should be constructed using the schema
+property. Essentially we just call `validate()` during object construction with
+the attributes passed in.
+
+If validation fails, `instance.__err` is populated with the error returned from
+`validate()`.
+
+```js
+class Sloth extends MongoModels {}
+
+Sloth.schema = Joi.object().keys({
+    name: Joi.string().required(),
+    hasHat: Joi.boolean().default(true)
+});
+
+Sloth.constructWithSchema = true;
+
+const fast = new Sloth({
+    name: 'Flash'
+});
+// Sloth { name: 'Flash', hasHat: true }
+
+Boolean(fast.__err);
+// false
+
+const slow = new Sloth({
+    hasHat: false
+});
+// Sloth { hasHat: false }
+
+Boolean(slow.__err);
+// true
 ```
 
 
