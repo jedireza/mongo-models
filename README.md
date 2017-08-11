@@ -15,7 +15,7 @@ MongoDB's native Node.js driver. It's a real deal ODM with tons of features.
 You should check it out.
 
 We wanted something in between the MongoDB driver and Mongoose. A light weight
-absctraction where we can interact with collections via JavaScript classes and
+abstraction where we can interact with collections via JavaScript classes and
 get document results as instances of those classes.
 
 We're also big fans of the object schema validation library
