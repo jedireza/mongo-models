@@ -441,6 +441,7 @@ Kitten.sortAdapter('name -email');
 Updates multiple documents and returns the count of modified documents where:
 
 - `filter` - a filter object used to select the documents to update.
+    - `$isolated` -  Default [`$isolated`](https://docs.mongodb.com/manual/reference/operator/update/isolated/) is set to 1, add $isolated: 0 to filter to disable
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
   [`updateMany`](https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/)
@@ -458,6 +459,7 @@ Updates multiple documents and returns the count of modified documents where:
 Updates a document and returns the count of modified documents where:
 
 - `filter` - a filter object used to select the document to update.
+    - `$isolated` -  Default [`$isolated`](https://docs.mongodb.com/manual/reference/operator/update/isolated/) is set to 1, add $isolated: 0 to filter to disable
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
   [`updateOne`](https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/)

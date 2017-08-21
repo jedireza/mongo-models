@@ -404,7 +404,7 @@ class MongoModels {
         let filter;
 
         try {
-            filter = { _id: this._idClass(id) };
+            filter = { _id: this._idClass(id) , $isolated : 1 };
         }
         catch (exception) {
             return callback(exception);
@@ -481,6 +481,10 @@ class MongoModels {
         const callback = args.pop();
         const options = Hoek.applyToDefaults({}, args.pop() || {});
 
+        if (!filter.$isolated) {
+            filter.$isolated = 1;
+        }
+
         args.push(filter);
         args.push(update);
         args.push(options);
@@ -509,6 +513,10 @@ class MongoModels {
         const update = args.shift();
         const callback = args.pop();
         const options = Hoek.applyToDefaults({}, args.pop() || {});
+
+        if (!filter.$isolated) {
+            filter.$isolated = 1;
+        }
 
         args.push(filter);
         args.push(update);
