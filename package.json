@@ -1,10 +1,10 @@
 {
   "name": "mongo-models",
   "version": "1.4.0",
-  "description": "Map JavaScript classes to MongoDB collections",
+  "description": "JavaScript class interfaces to MongoDB collections",
   "main": "index.js",
   "scripts": {
-    "test": "lab -c -L"
+    "test": "lab -c -L --assert code"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "odm"
   ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.x.x"
   },
   "author": "Reza Akhavan <reza@akhavan.me>",
   "license": "MIT",
@@ -27,18 +27,15 @@
   },
   "homepage": "https://github.com/jedireza/mongo-models",
   "devDependencies": {
-    "code": "4.x.x",
-    "lab": "14.x.x",
-    "mongodb": "2.x.x",
-    "opn-cli": "3.x.x",
-    "proxyquire": "1.x.x"
+    "code": "5.x.x",
+    "lab": "15.x.x",
+    "mongodb": "2.x.x"
   },
   "peerDependencies": {
     "mongodb": "2.x.x"
   },
   "dependencies": {
-    "async": "2.x.x",
-    "hoek": "4.x.x",
-    "joi": "10.x.x"
+    "hoek": "5.x.x",
+    "joi": "13.x.x"
   }
 }

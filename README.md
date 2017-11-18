@@ -1,6 +1,6 @@
 # mongo-models
 
-Map JavaScript classes to MongoDB collections.
+JavaScript class interfaces to MongoDB collections.
 
 [![Build Status](https://img.shields.io/travis/jedireza/mongo-models.svg)](https://travis-ci.org/jedireza/mongo-models)
 [![Dependency Status](https://img.shields.io/david/jedireza/mongo-models.svg)](https://david-dm.org/jedireza/mongo-models)

@@ -1,194 +1,141 @@
 'use strict';
-const Async = require('async');
 const Hoek = require('hoek');
 const Joi = require('joi');
 const Mongodb = require('mongodb');
 
 
+const argsFromArguments = function (argumentz) {
+
+    const args = new Array(argumentz.length);
+
+    for (let i = 0; i < args.length; ++i) {
+        args[i] = argumentz[i];
+    }
+
+    return args;
+};
+
+
+const dbFromArgs = function (args) {
+
+    let db = MongoModels.dbs.default;
+
+    if (args[0] instanceof Mongodb.Db) {
+        db = args.shift();
+    }
+
+    return db;
+};
+
+
 class MongoModels {
     constructor(attrs) {
 
-        if (this.constructor.constructWithSchema) {
-            this.constructor.validate(attrs, (err, value) => {
+        const result = this.constructor.validate(attrs);
 
-                if (err) {
-                    return Object.defineProperty(this, '__err', {
-                        writable: true,
-                        enumerable: false,
-                        value: err
-                    });
-                }
-
-                attrs = value;
-            });
+        if (result.error) {
+            throw result.error;
         }
 
-        Object.assign(this, attrs);
+        Object.assign(this, result.value);
     }
 
 
-    static connect(uri, options, callback) {
+    static aggregate() {
 
-        Mongodb.MongoClient.connect(uri, options, (err, db) => {
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
 
-            if (err) {
-                return callback(err);
-            }
-
-            MongoModels.db = db;
-
-            callback(null, db);
-        });
+        return collection.aggregate.apply(collection, args).toArray();
     }
 
 
-    static disconnect() {
+    static collection() {
 
-        MongoModels.db.close();
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+
+        return db.collection(this.collectionName);
+    }
+
+
+    static async connect(uri, options = {}, name = 'default') {
+
+        const db = await Mongodb.MongoClient.connect(uri, options);
+
+        MongoModels.dbs[name] = db;
+
+        return db;
+    }
+
+
+    static count() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+
+        return collection.count.apply(collection, args);
     }
 
 
     static createIndexes() {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
 
-        const collection = MongoModels.db.collection(this.collection);
-        collection.createIndexes.apply(collection, args);
+        return collection.createIndexes.apply(collection, args);
     }
 
 
-    static validate(input, callback) {
+    static deleteMany() {
 
-        return Joi.validate(input, this.schema, callback);
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+
+        return collection.deleteMany.apply(collection, args);
     }
 
 
-    validate(callback) {
+    static deleteOne() {
 
-        return Joi.validate(this, this.constructor.schema, callback);
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+
+        return collection.deleteOne.apply(collection, args);
     }
 
 
-    static resultFactory() {
+    static disconnect(name) {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
+        if (name === undefined) {
+            Object.keys(MongoModels.dbs).forEach((key) => {
 
-        const next = args.shift();
-        const err = args.shift();
-        let result = args.shift();
-
-        if (err) {
-            args.unshift(result);
-            args.unshift(err);
-            return next.apply(undefined, args);
-        }
-
-        const self = this;
-
-        if (Object.prototype.toString.call(result) === '[object Array]') {
-            result.forEach((item, index) => {
-
-                result[index] = new self(item);
+                MongoModels.dbs[key].close();
             });
+
+            return;
         }
 
-        if (Object.prototype.toString.call(result) === '[object Object]') {
-            if (result.hasOwnProperty('value') && !result.hasOwnProperty('_id')) {
-                if (result.value) {
-                    result = new this(result.value);
-                }
-                else {
-                    result = undefined;
-                }
-            }
-            else if (result.hasOwnProperty('ops')) {
-                result.ops.forEach((item, index) => {
-
-                    result.ops[index] = new self(item);
-                });
-
-                result = result.ops;
-            }
-            else if (result.hasOwnProperty('_id')) {
-                result = new this(result);
-            }
+        if (!MongoModels.dbs.hasOwnProperty(name)) {
+            throw new Error(`Db connection '${name}' not found.`);
         }
 
-        args.unshift(result);
-        args.unshift(err);
-        next.apply(undefined, args);
+        MongoModels.dbs[name].close();
     }
 
 
-    static pagedFind(filter, fields, sort, limit, page, callback) {
+    static distinct() {
 
-        const self = this;
-        const output = {
-            data: undefined,
-            pages: {
-                current: page,
-                prev: 0,
-                hasPrev: false,
-                next: 0,
-                hasNext: false,
-                total: 0
-            },
-            items: {
-                limit,
-                begin: ((page * limit) - limit) + 1,
-                end: page * limit,
-                total: 0
-            }
-        };
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
 
-        fields = this.fieldsAdapter(fields);
-        sort = this.sortAdapter(sort);
-
-        Async.auto({
-            count: function (done) {
-
-                self.count(filter, done);
-            },
-            find: function (done) {
-
-                const options = {
-                    limit,
-                    skip: (page - 1) * limit,
-                    sort
-                };
-
-                self.find(filter, fields, options, done);
-            }
-        }, (err, results) => {
-
-            if (err) {
-                return callback(err);
-            }
-
-            output.data = results.find;
-            output.items.total = results.count;
-
-            // paging calculations
-            output.pages.total = Math.ceil(output.items.total / limit);
-            output.pages.next = output.pages.current + 1;
-            output.pages.hasNext = output.pages.next <= output.pages.total;
-            output.pages.prev = output.pages.current - 1;
-            output.pages.hasPrev = output.pages.prev !== 0;
-            if (output.items.begin > output.items.total) {
-                output.items.begin = output.items.total;
-            }
-            if (output.items.end > output.items.total) {
-                output.items.end = output.items.total;
-            }
-
-            callback(null, output);
-        });
+        return collection.distinct.apply(collection, args);
     }
 
 
@@ -216,6 +163,267 @@ class MongoModels {
     }
 
 
+    static async find() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const result = await collection.find.apply(collection, args).toArray();
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findById() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const id = args.shift();
+        const filter = { _id: this._idClass(id) };
+
+        args.unshift(filter);
+
+        const result = await collection.findOne.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findByIdAndDelete() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const id = args.shift();
+        const filter = { _id: this._idClass(id) };
+        const options = Hoek.applyToDefaults({}, args.pop() || {});
+        const result = await collection.findOneAndDelete(filter, options);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findByIdAndUpdate() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const id = args.shift();
+        const update = args.shift();
+        const defaultOptions = {
+            returnOriginal: false
+        };
+        const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
+        const filter = { _id: this._idClass(id) };
+        const result = await collection.findOneAndUpdate(filter, update, options);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findOne() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const result = await collection.findOne.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findOneAndDelete() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const result = await collection.findOneAndDelete.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findOneAndReplace() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const filter = args.shift();
+        const doc = args.shift();
+        const defaultOptions = {
+            returnOriginal: false
+        };
+        const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
+
+        args.push(filter);
+        args.push(doc);
+        args.push(options);
+
+        const result = await collection.findOneAndReplace.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async findOneAndUpdate() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const filter = args.shift();
+        const doc = args.shift();
+        const defaultOptions = {
+            returnOriginal: false
+        };
+        const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
+
+        args.push(filter);
+        args.push(doc);
+        args.push(options);
+
+        const result = await collection.findOneAndUpdate.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async insertMany() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const result = await collection.insertMany.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async insertOne() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const result = await collection.insertOne.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static async pagedFind() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const page = args.pop();
+        const limit = args.pop();
+        let sort = args.pop();
+        let fields = args.pop();
+        const filter = args.pop();
+
+        fields = this.fieldsAdapter(fields);
+        sort = this.sortAdapter(sort);
+
+        const output = {
+            data: undefined,
+            pages: {
+                current: page,
+                prev: 0,
+                hasPrev: false,
+                next: 0,
+                hasNext: false,
+                total: 0
+            },
+            items: {
+                limit,
+                begin: ((page * limit) - limit) + 1,
+                end: page * limit,
+                total: 0
+            }
+        };
+        const findOptions = {
+            limit,
+            skip: (page - 1) * limit,
+            sort
+        };
+        const [count, results] = await Promise.all([
+            this.count(db, filter),
+            this.find(db, filter, fields, findOptions)
+        ]);
+
+        output.data = results;
+        output.items.total = count;
+        output.pages.total = Math.ceil(output.items.total / limit);
+        output.pages.next = output.pages.current + 1;
+        output.pages.hasNext = output.pages.next <= output.pages.total;
+        output.pages.prev = output.pages.current - 1;
+        output.pages.hasPrev = output.pages.prev !== 0;
+
+        if (output.items.begin > output.items.total) {
+            output.items.begin = output.items.total;
+        }
+
+        if (output.items.end > output.items.total) {
+            output.items.end = output.items.total;
+        }
+
+        return output;
+    }
+
+
+    static async replaceOne() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
+        const filter = args.shift();
+        const doc = args.shift();
+        const options = Hoek.applyToDefaults({}, args.pop() || {});
+
+        args.push(filter);
+        args.push(doc);
+        args.push(options);
+
+        const result = await collection.replaceOne.apply(collection, args);
+
+        return this.resultFactory(result);
+    }
+
+
+    static resultFactory(result) {
+
+        if (Object.prototype.toString.call(result) === '[object Array]') {
+            result.forEach((item, index) => {
+
+                result[index] = new this(item);
+            });
+        }
+
+        if (Object.prototype.toString.call(result) === '[object Object]') {
+            if (result.hasOwnProperty('value') && !result.hasOwnProperty('_id')) {
+                if (result.value) {
+                    result = new this(result.value);
+                }
+                else {
+                    result = undefined;
+                }
+            }
+            else if (result.hasOwnProperty('ops')) {
+                result.ops.forEach((item, index) => {
+
+                    result.ops[index] = new this(item);
+                });
+
+                result = result.ops;
+            }
+            else if (result.hasOwnProperty('_id')) {
+                result = new this(result);
+            }
+        }
+
+        return result;
+    }
+
+
     static sortAdapter(sorts) {
 
         if (Object.prototype.toString.call(sorts) === '[object String]') {
@@ -240,369 +448,98 @@ class MongoModels {
     }
 
 
-    static aggregate() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        collection.aggregate.apply(collection, args);
-    }
-
-
-    static count() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        collection.count.apply(collection, args);
-    }
-
-
-    static distinct() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        collection.distinct.apply(collection, args);
-    }
-
-
-    static find() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        collection.find.apply(collection, args).toArray(callback);
-    }
-
-
-    static findOne() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        args.push(callback);
-        collection.findOne.apply(collection, args);
-    }
-
-
-    static findOneAndUpdate() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-        const filter = args.shift();
-        const doc = args.shift();
-        const options = Hoek.applyToDefaults({ returnOriginal: false }, args.pop() || {});
-
-        args.push(filter);
-        args.push(doc);
-        args.push(options);
-        args.push(callback);
-
-        collection.findOneAndUpdate.apply(collection, args);
-    }
-
-
-    static findOneAndDelete() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        args.push(callback);
-        collection.findOneAndDelete.apply(collection, args);
-    }
-
-
-    static findOneAndReplace() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-        const filter = args.shift();
-        const doc = args.shift();
-        const options = Hoek.applyToDefaults({ returnOriginal: false }, args.pop() || {});
-
-        args.push(filter);
-        args.push(doc);
-        args.push(options);
-        args.push(callback);
-
-        collection.findOneAndReplace.apply(collection, args);
-    }
-
-
-    static findById() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const id = args.shift();
-        const callback = this.resultFactory.bind(this, args.pop());
-        let filter;
-
-        try {
-            filter = { _id: this._idClass(id) };
-        }
-        catch (exception) {
-            return callback(exception);
-        }
-
-        args.unshift(filter);
-        args.push(callback);
-        collection.findOne.apply(collection, args);
-    }
-
-
-    static findByIdAndUpdate() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const id = args.shift();
-        const update = args.shift();
-        const callback = this.resultFactory.bind(this, args.pop());
-        const options = Hoek.applyToDefaults({ returnOriginal: false }, args.pop() || {});
-        let filter;
-
-        try {
-            filter = { _id: this._idClass(id) };
-        }
-        catch (exception) {
-            return callback(exception);
-        }
-
-        collection.findOneAndUpdate(filter, update, options, callback);
-    }
-
-
-    static findByIdAndDelete() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const id = args.shift();
-        const callback = this.resultFactory.bind(this, args.pop());
-        const options = Hoek.applyToDefaults({}, args.pop() || {});
-        let filter;
-
-        try {
-            filter = { _id: this._idClass(id) };
-        }
-        catch (exception) {
-            return callback(exception);
-        }
-
-        collection.findOneAndDelete(filter, options, callback);
-    }
-
-
-    static insertMany() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        args.push(callback);
-        collection.insertMany.apply(collection, args);
-    }
-
-
-    static insertOne() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = this.resultFactory.bind(this, args.pop());
-
-        args.push(callback);
-        collection.insertOne.apply(collection, args);
-    }
-
-
-    static updateMany() {
-
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
+    static async updateMany() {
+
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
         const filter = args.shift();
         const update = args.shift();
-        const callback = args.pop();
         const options = Hoek.applyToDefaults({}, args.pop() || {});
 
         args.push(filter);
         args.push(update);
         args.push(options);
-        args.push((err, results) => {
 
-            if (err) {
-                return callback(err);
-            }
+        const result = await collection.updateMany.apply(collection, args);
 
-            callback(null, results.modifiedCount, results);
-        });
-
-        collection.updateMany.apply(collection, args);
+        return this.resultFactory(result);
     }
 
 
-    static updateOne() {
+    static async updateOne() {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
+        const args = argsFromArguments(arguments);
+        const db = dbFromArgs(args);
+        const collection = db.collection(this.collectionName);
         const filter = args.shift();
         const update = args.shift();
-        const callback = args.pop();
         const options = Hoek.applyToDefaults({}, args.pop() || {});
 
         args.push(filter);
         args.push(update);
         args.push(options);
-        args.push((err, results) => {
 
-            if (err) {
-                return callback(err);
-            }
+        const result = await collection.updateOne.apply(collection, args);
 
-            callback(null, results.modifiedCount, results);
-        });
-
-        collection.updateOne.apply(collection, args);
+        return this.resultFactory(result);
     }
 
 
-    static replaceOne() {
+    static validate(input) {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const filter = args.shift();
-        const doc = args.shift();
-        const callback = args.pop();
-        const options = Hoek.applyToDefaults({}, args.pop() || {});
-
-        args.push(filter);
-        args.push(doc);
-        args.push(options);
-        args.push((err, results) => {
-
-            if (err) {
-                return callback(err);
-            }
-
-            callback(null, results.modifiedCount, results);
-        });
-
-        collection.replaceOne.apply(collection, args);
+        return Joi.validate(input, this.schema);
     }
 
 
-    static deleteOne() {
+    validate() {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
-        }
-
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = args.pop();
-
-        args.push((err, results) => {
-
-            if (err) {
-                return callback(err);
-            }
-
-            callback(null, results.deletedCount);
-        });
-
-        collection.deleteOne.apply(collection, args);
+        return Joi.validate(this, this.constructor.schema);
     }
 
 
-    static deleteMany() {
+    static with(name) {
 
-        const args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-            args[i] = arguments[i];
+        if (!MongoModels.dbs.hasOwnProperty(name)) {
+            throw new Error(`Db connection '${name}' not found.`);
         }
 
-        const collection = MongoModels.db.collection(this.collection);
-        const callback = args.pop();
+        const db = MongoModels.dbs[name];
+        const boundFunctionsId = `__MongoModelsDbBound${this.name}__`;
 
-        args.push((err, results) => {
+        if (!db.hasOwnProperty(boundFunctionsId)) {
+            db[boundFunctionsId] = {
+                aggregate: this.aggregate.bind(this, db),
+                collection: this.collection.bind(this, db),
+                count: this.count.bind(this, db),
+                createIndexes: this.createIndexes.bind(this, db),
+                deleteMany: this.deleteMany.bind(this, db),
+                deleteOne: this.deleteOne.bind(this, db),
+                distinct: this.distinct.bind(this, db),
+                find: this.find.bind(this, db),
+                findById: this.findById.bind(this, db),
+                findByIdAndDelete: this.findByIdAndDelete.bind(this, db),
+                findByIdAndUpdate: this.findByIdAndUpdate.bind(this, db),
+                findOne: this.findOne.bind(this, db),
+                findOneAndDelete: this.findOneAndDelete.bind(this, db),
+                findOneAndReplace: this.findOneAndReplace.bind(this, db),
+                findOneAndUpdate: this.findOneAndUpdate.bind(this, db),
+                insertMany: this.insertMany.bind(this, db),
+                insertOne: this.insertOne.bind(this, db),
+                replaceOne: this.replaceOne.bind(this, db),
+                updateMany: this.updateMany.bind(this, db),
+                updateOne: this.updateOne.bind(this, db)
+            };
+        }
 
-            if (err) {
-                return callback(err);
-            }
-
-            callback(null, results.deletedCount);
-        });
-
-        collection.deleteMany.apply(collection, args);
+        return db[boundFunctionsId];
     }
 }
 
+
 MongoModels._idClass = Mongodb.ObjectID;
 MongoModels.ObjectId = MongoModels.ObjectID = Mongodb.ObjectID;
+MongoModels.dbs = {};
 
 
 module.exports = MongoModels;
