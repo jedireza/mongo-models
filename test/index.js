@@ -8,7 +8,7 @@ const Proxyquire = require('proxyquire');
 
 const lab = exports.lab = Lab.script();
 const config = {
-    uri: 'mongodb://localhost:27017/mongo-models-test',
+    connection: { uri: 'mongodb://localhost:27017/', db: 'mongo-models-test' },
     options: {}
 };
 const stub = {
@@ -23,7 +23,7 @@ lab.experiment('MongoModels DB Connection', () => {
 
     lab.test('it connects and disconnects the database', (done) => {
 
-        MongoModels.connect(config.uri, config.options, (err, db) => {
+        MongoModels.connect(config.connection, config.options, (err, db) => {
 
             Code.expect(err).to.not.exist();
             Code.expect(db).to.be.an.object();
@@ -48,7 +48,7 @@ lab.experiment('MongoModels DB Connection', () => {
             }
         };
 
-        MongoModels.connect(config.uri, config.options, (err, db) => {
+        MongoModels.connect(config.connection, config.options, (err, db) => {
 
             Code.expect(err).to.be.an.object();
             Code.expect(db).to.not.exist();
@@ -303,7 +303,7 @@ lab.experiment('MongoModels Indexes', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(config.uri, config.options, (err, db) => {
+        MongoModels.connect(config.connection, config.options, (err, db) => {
 
             done(err);
         });
@@ -374,7 +374,7 @@ lab.experiment('MongoModels Paged Find', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(config.uri, config.options, (err, db) => {
+        MongoModels.connect(config.connection, config.options, (err, db) => {
 
             done(err);
         });
@@ -543,7 +543,7 @@ lab.experiment('MongoModels Proxied Methods', () => {
 
         SubModel.collection = 'submodels';
 
-        MongoModels.connect(config.uri, config.options, (err, db) => {
+        MongoModels.connect(config.connection, config.options, (err, db) => {
 
             done(err);
         });

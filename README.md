@@ -82,7 +82,9 @@ const MongoModels = require('mongo-models');
 
 const app = Express();
 
-MongoModels.connect(process.env.MONGODB_URI, {}, (err, db) => {
+const connection = { uri: process.env.MONGODB_URI, db: process.env.TEST_DATABASE };
+
+MongoModels.connect(connection, {}, (err, db) => {
 
     if (err) {
         // TODO: throw error or try reconnecting

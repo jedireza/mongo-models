@@ -125,11 +125,13 @@ Boolean(slow.__err);
 
 ## Methods
 
-### `connect(uri, options, callback)`
+### `connect(connection, options, callback)`
 
 Connects to a MongoDB server where:
 
-- `uri` - the connection string passed to `MongoClient.connect`.
+- `connection` - an object with two properties:
+  - `uri`: the uri string passed to `MongoClient.connect`.
+  - `db`: the name of the database being connecting to.
 - `options` - an optional object passed to `MongoClient.connect`.
 - `callback` - the callback method using the signature `function (err, db)`
   where:
