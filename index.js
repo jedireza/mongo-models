@@ -249,7 +249,10 @@ class MongoModels {
         }
 
         const collection = MongoModels.db.collection(this.collection);
-        collection.aggregate.apply(collection, args);
+        if (args[1] && typeof args[1] === 'object') {
+            return collection.aggregate(args[0], args[1]).toArray(args[2]);
+        }
+        return collection.aggregate(args[0]).toArray(args[1]);
     }
 
 
