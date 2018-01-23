@@ -1,239 +1,194 @@
 # API reference
 
+<!-- toc -->
+
 - [Properties](#properties)
   - [`_idClass`](#_idclass)
-  - [`collection`](#collection)
-  - [`ObjectId`](#objectid)
+  - [`collectionName`](#collectionname)
+  - [`ObjectID`](#objectid)
   - [`schema`](#schema)
-  - [`constructWithSchema`](#constructwithschema)
 - [Methods](#methods)
-  - [`connect(uri, options, callback)`](#connectconfig-callback)
-  - [`aggregate(pipeline, [options], callback)`](#aggregatepipeline-options-callback)
-  - [`count(filter, [options], callback)`](#countfilter-options-callback)
-  - [`createIndexes(indexSpecs, [callback])`](#createindexesindexspecs-callback)
-  - [`deleteMany(filter, [options], callback)`](#deletemanyfilter-options-callback)
-  - [`deleteOne(filter, [options], callback)`](#deleteonefilter-options-callback)
-  - [`disconnect()`](#disconnect)
-  - [`distinct(field, [filter], callback)`](#distinctfield-filter-callback)
+  - [`constructor(data)`](#constructordata)
+  - [`async aggregate(pipeline, [options])`](#async-aggregatepipeline-options)
+  - [`collection()`](#collection)
+  - [`async connect(connection, [options], [name])`](#async-connectconnection-options-name)
+  - [`async count(query, [options])`](#async-countquery-options)
+  - [`async createIndexes(indexSpecs)`](#async-createindexesindexspecs)
+  - [`async deleteMany(filter, [options])`](#async-deletemanyfilter-options)
+  - [`async deleteOne(filter, [options])`](#async-deleteonefilter-options)
+  - [`disconnect([name])`](#disconnectname)
+  - [`async distinct(key, query, [options])`](#async-distinctkey-query-options)
   - [`fieldsAdapter(fields)`](#fieldsadapterfields)
-  - [`find(filter, [options], callback)`](#findfilter-options-callback)
-  - [`findById(id, [options], callback)`](#findbyidid-options-callback)
-  - [`findByIdAndDelete(id, callback)`](#findbyidanddeleteid-callback)
-  - [`findByIdAndUpdate(id, update, [options], callback)`](#findbyidandupdateid-update-options-callback)
-  - [`findOne(filter, [options], callback)`](#findonefilter-options-callback)
-  - [`findOneAndDelete(filter, [options], callback)`](#findoneanddeletefilter-options-callback)
-  - [`findOneAndUpdate(filter, update, [options], callback)`](#findoneandupdatefilter-options-callback)
-  - [`insertMany(docs, [options], callback)`](#insertmanydocs-options-callback)
-  - [`insertOne(doc, [options], callback)`](#insertonedoc-options-callback)
-  - [`pagedFind(filter, fields, sort, limit, page, callback)`](#pagedfindfilter-fields-sort-limit-page-callback)
-  - [`replaceOne(filter, doc, [options], callback)`](#replaceonefilter-doc-options-callback)
+  - [`async find(query, [options])`](#async-findquery-options)
+  - [`async findById(id, [options])`](#async-findbyidid-options)
+  - [`async findByIdAndDelete(id)`](#async-findbyidanddeleteid)
+  - [`async findByIdAndUpdate(id, update, [options])`](#async-findbyidandupdateid-update-options)
+  - [`async findOne(query, [options])`](#async-findonequery-options)
+  - [`async findOneAndDelete(filter, [options])`](#async-findoneanddeletefilter-options)
+  - [`async findOneAndReplace(filter, replacement, [options])`](#async-findoneandreplacefilter-replacement-options)
+  - [`async findOneAndUpdate(filter, update, [options])`](#async-findoneandupdatefilter-update-options)
+  - [`async insertMany(docs, [options])`](#async-insertmanydocs-options)
+  - [`async insertOne(doc, [options])`](#async-insertonedoc-options)
+  - [`async pagedFind(filter, limit, page, [options])`](#async-pagedfindfilter-limit-page-options)
+  - [`async replaceOne(filter, doc, [options])`](#async-replaceonefilter-doc-options)
   - [`sortAdapter(sorts)`](#sortadaptersorts)
-  - [`updateMany(filter, update, [options], callback)`](#updatemanyfilter-update-options-callback)
-  - [`updateOne(filter, update, [options], callback)`](#updateonefilter-update-options-callback)
-  - [`validate(callback)`](#validatecallback)
-  - [`validate(input, callback)`](#validateinput-callback)
+  - [`async updateMany(filter, update, [options])`](#async-updatemanyfilter-update-options)
+  - [`async updateOne(filter, update, [options])`](#async-updateonefilter-update-options)
+  - [`validate()`](#validate)
+  - [`validate(input)`](#validateinput)
+  - [`with(name)`](#withname)
 
+<!-- tocstop -->
 
 ## Properties
 
 ### `_idClass`
 
 The type used to cast `_id` properties. Defaults to
-[`MongoDB.ObjectId`](http://docs.mongodb.org/manual/reference/object-id/).
+[`MongoDB.ObjectID`](http://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
 
 If you wanted to use plain strings for your document `_id` properties you could:
 
 ```js
-Kitten._idClass = String;
+Customer._idClass = String;
 ```
 
-When you define a custom `_idClass` property for your model you just need to
-pass an `_id` parameter of that type when you create new documents.
+When you define a custom `_idClass` property for your model you need to pass an
+`_id` parameter of that type when you create new documents.
 
 ```js
-const data = {
-    _id: 'captain-cute',
-    name: 'Captain Cute'
-};
-
-Kitten.insert(data, (err, results) => {
-
-    // handle response
+const document = new Customer({
+    _id: 'stephen-colbert',
+    name: 'Stephen Colbert'
 });
+
+const customers = await Customer.insertOne(data);
 ```
 
-### `collection`
+### `collectionName`
 
 The name of the collection in MongoDB.
 
 ```js
-Kitten.collection = 'kittens';
+Customer.collectionName = 'customers';
 ```
 
-### `ObjectId`
+### `ObjectID`
 
-An alias to `MongoDB.ObjectId`.
+An alias to
+[`MongoDB.ObjectID`](http://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
 
 ### `schema`
 
 A `joi` object schema. See: https://github.com/hapijs/joi
 
 ```js
-Kitten.schema = Joi.object().keys({
+Customer.schema = Joi.object({
     _id: Joi.string(),
     name: Joi.string().required(),
     email: Joi.string().required()
 });
 ```
 
-### `constructWithSchema`
-
-A boolean indicating if new instances should be constructed using the schema
-property. Essentially we just call `validate()` during object construction with
-the attributes passed in.
-
-If validation fails, `instance.__err` is populated with the error returned from
-`validate()`.
-
-```js
-class Sloth extends MongoModels {}
-
-Sloth.schema = Joi.object().keys({
-    name: Joi.string().required(),
-    hasHat: Joi.boolean().default(true)
-});
-
-Sloth.constructWithSchema = true;
-
-const fast = new Sloth({
-    name: 'Flash'
-});
-// Sloth { name: 'Flash', hasHat: true }
-
-Boolean(fast.__err);
-// false
-
-const slow = new Sloth({
-    hasHat: false
-});
-// Sloth { hasHat: false }
-
-Boolean(slow.__err);
-// true
-```
-
-
 ## Methods
 
-### `connect(uri, options, callback)`
+### `constructor(data)`
 
-Connects to a MongoDB server where:
+Constructs a new instance of your class using the data provided where:
 
-- `uri` - the connection string passed to `MongoClient.connect`.
+- `data` - an object containing the fields and values of the model instance.
+  Internally `data` is passed to the `validate` function, throwing an error if
+  present or assigning the value (the validated value with any type conversions
+  and other modifiers applied) to the object as properties.
+
+### `async aggregate(pipeline, [options])`
+
+Execute an aggregation framework pipeline against the collection.
+
+- `pipeline` - an array containing all the aggregation framework commands.
+- `options` - an optional options object passed to MongoDB's native
+  [`aggregate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate)
+  method.
+
+### `collection()`
+
+Returns the underlying
+[`MongoDB.Collection`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html).
+
+### `async connect(connection, [options], [name])`
+
+Connects to a MongoDB server and returns the
+[`MongoDB.Db`](http://mongodb.github.io/node-mongodb-native/3.0/api/Db.html)
+where:
+
+- `connection` - an object where:
+    - `uri` - the uri of the database. [See uri string
+      docs](https://docs.mongodb.com/manual/reference/connection-string/).
+    - `db` - the name of the database.
 - `options` - an optional object passed to `MongoClient.connect`.
-- `callback` - the callback method using the signature `function (err, db)`
-  where:
-  - `err` - if the connection failed, the error reason, otherwise `null`.
-  - `db` - if the connection succeeded, the initialized db object.
+- `name` - an optional string to identify the connection. Used to support
+  multiple connections along with the [`with(name)`](#withname) method.
+  Defaults to `default`.
 
-### `aggregate(pipeline, [options], callback)`
+### `async count(query, [options])`
 
-Calculates aggregate values for the data in a collection where:
+Returns the number of documents matching a `query` where:
 
-- `pipeline` - A sequence of data aggregation operations or stages.
-- `options` - an options object passed to MongoDB's native
-  [`aggregate`](https://docs.mongodb.com/manual/reference/method/db.collection.aggregate/)
+- `query` - a filter object used to select the documents to count.
+- `options` - an options object passed to the native
+  [`Collection.count`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count)
   method.
-- `callback` - the callback method using the signature `function (err,
-  results)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `results` - if the query succeeded, an array of documents return from the
-    aggregation.
 
-### `count(filter, [options], callback)`
+### `async createIndexes(indexSpecs)`
 
-Counts documents matching a `filter` where:
-
-- `filter` - a filter object used to select the documents to count.
-- `options` - an options object passed to MongoDB's native
-  [`count`](https://docs.mongodb.com/manual/reference/method/db.collection.count/)
-  method.
-- `callback` - the callback method using the signature `function (err, count)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the query succeeded, a number indicating how many documents
-    matched the `filter`.
-
-### `createIndexes(indexSpecs, [callback])`
-
-Note: `createIndexes` is called during plugin registration for each model when
-the `autoIndex` option is set to `true`.
-
-Creates multiple indexes in the collection where:
+Creates multiple indexes in the collection and returns the result where:
 
 - `indexSpecs` - an array of objects containing index specifications to be
-  created.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if creating the indexes failed, the error reason, otherwise `null`.
-  - `result` - if creating the indexes succeeded, the result object.
+  created. [See the index
+  specification](http://docs.mongodb.org/manual/reference/command/createIndexes/)
 
 Indexes are defined as a static property on your models like:
 
 ```js
-Kitten.indexes = [
+Customer.indexes = [
     { key: { name: 1 } },
     { key: { email: -1 } }
 ];
 ```
 
-For details on all the options an index specification may have see:
+### `async deleteMany(filter, [options])`
 
-https://docs.mongodb.org/manual/reference/command/createIndexes/
-
-### `deleteMany(filter, [options], callback)`
-
-Deletes multiple documents and returns the count of deleted documents where:
+Deletes multiple documents and returns the
+[`Collection.deleteWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
+where:
 
 - `filter` - a filter object used to select the documents to delete.
 - `options` - an options object passed to MongoDB's native
-  [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/)
+  [`Collection.deleteMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany)
   method.
-- `callback` - the callback method using the signature `function (err, count)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the query succeeded, a number indicating how many documents
-    were deleted.
 
-### `deleteOne(filter, [options], callback)`
+### `async deleteOne(filter, [options])`
 
-Deletes a document and returns the count of deleted documents where:
+Deletes a document and returns the
+[`Collection.deleteWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
+where:
 
 - `filter` - a filter object used to select the document to delete.
 - `options` - an options object passed to MongoDB's native
-  [`deleteOne`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteOne/)
+  [`Collection.deleteOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne)
   method.
-- `callback` - the callback method using the signature `function (err, count)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the query succeeded, a number indicating how many documents
-    were deleted.
 
-### `disconnect()`
+### `disconnect([name])`
 
-Closes the current db connection.
+Closes a specific connection by name or all connections if no name is specified.
 
-### `distinct(field, [filter], callback)`
+### `async distinct(key, query, [options])`
 
-Finds the distinct values for the specified `field`.
+Returns a list of distinct values for the given key across a collection where:
 
-- `field` - a string representing the field for which to return distinct values.
-- `filter` - an optional filter object used to limit the documents distinct applies to.
-- `callback` - the callback method using the signature `function (err, values)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `values` - if the query succeeded, an array of values representing the
-    distinct values for the specified `field`.
+- `key` - a string representing the field for which to return distinct values.
+- `query` - an optional query object used to limit the documents distinct
+  applies to.
 
 ### `fieldsAdapter(fields)`
 
@@ -246,179 +201,142 @@ where:
 Returns a MongoDB friendly fields object.
 
 ```js
-Kitten.fieldsAdapter('name -email');
+Customer.fieldsAdapter('name -email');
 
 // { name: true, email: false }
 ```
 
-### `find(filter, [options], callback)`
+### `async find(query, [options])`
 
-Finds documents where:
+Finds documents and returns an array of model instances where:
 
-- `filter` - a filter object used to select the documents.
+- `query` - a query object used to select the documents.
 - `options` - an options object passed to MongoDB's native
-  [`find`](https://docs.mongodb.com/manual/reference/method/db.collection.find/)
+  [`find`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
   method.
-- `callback` - the callback method using the signature `function (err,
-  results)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `results` - if the query succeeded, an array of documents as class
-    instances.
 
-### `findById(id, [options], callback)`
+### `async findById(id, [options])`
 
-Finds a document by `_id` where:
+Finds a document by `_id` and returns a model instance where:
 
-- `id` - is a string value of the `_id` to find. It will be casted to the type
-  of `_idClass`.
+- `id` - a string value of the `_id` to find. The `id` will be casted to the
+  type of `_idClass`.
 - `options` - an options object passed to MongoDB's native
-  [`findOne`](https://docs.mongodb.com/manual/reference/method/db.collection.findOne/)
+  [`Collection.findOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the query succeeded, a document as a class instance.
 
-### `findByIdAndDelete(id, callback)`
+### `async findByIdAndDelete(id)`
 
-Finds a document by `_id`, deletes it and returns it where:
+Finds a document by `_id`, deletes it and returns a model instance where:
 
-- `id` - is a string value of the `_id` to find. It will be casted to the type
-  of `_idClass`.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the query succeeded, a document as a class instance.
+- `id` - a string value of the `_id` to find. The `id` will be casted to the
+  type of `_idClass`.
 
-### `findByIdAndUpdate(id, update, [options], callback)`
+### `async findByIdAndUpdate(id, update, [options])`
 
-Finds a document by `_id`, updates it and returns it where:
+Finds a document by `_id`, updates it and returns a model instance where:
 
-- `id` - is a string value of the `_id` to find. It will be casted to the type
-  of `_idClass`.
+- `id` - a string value of the `_id` to find. The `id` will be casted to the
+  type of `_idClass`.
 - `update` - an object containing the fields/values to be updated.
 - `options` - an optional options object passed to MongoDB's native
-  [`findOneAndUpdate`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/)
+  [`Collection.findOneAndUpdate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the query succeeded, a document as a class instance.
 
-### `findOne(filter, [options], callback)`
+### `async findOne(query, [options])`
 
-Finds one document matching a `filter` where:
+Finds one document matching the `query` and returns a model intance where:
 
-- `filter` - a filter object used to select the document.
+- `query` - a filter object used to select the document.
 - `options` - an options object passed to MongoDB's native
-  [`findOne`](https://docs.mongodb.com/manual/reference/method/db.collection.findOne/)
+  [`Collection.findOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the query succeeded, a document as a class instance.
 
-### `findOneAndDelete(filter, [options], callback)`
+### `async findOneAndDelete(filter, [options])`
 
-Finds one document matching a `filter`, deletes it and returns it where:
+Finds one document matching a `filter`, deletes it and returns a model instance
+where:
 
 - `filter` - a filter object used to select the document to delete.
 - `options` - an options object passed to MongoDB's native
-  [`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/)
+  [`Collection.findOneAndDelete`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete)
   method.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the query succeeded, a document as a class instance.
 
-### `findOneAndUpdate(filter, update, [options], callback)`
+### `async findOneAndReplace(filter, replacement, [options])`
 
-Finds one document matching a `filter`, updates it and returns it where:
+Finds one document matching a `filter`, deletes it and returns a model instance
+where:
+
+- `filter` - a filter object used to select the document to delete.
+- `replacement` - the document replacing the matching document.
+- `options` - an options object passed to MongoDB's native
+  [`Collection.findOneAndReplace`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndReplace)
+  method. Defaults to `{ returnOriginal: false }`.
+
+### `async findOneAndUpdate(filter, update, [options])`
+
+Finds one document matching a `filter`, updates it and returns a model instance
+where:
 
 - `filter` - a filter object used to select the document to update.
 - `update` - an object containing the fields/values to be updated.
 - `options` - an options object passed to MongoDB's native
-  [`findOneAndUpdate`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/)
+  [`Collection.findOneAndUpdate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
-- `callback` - the callback method using the signature `function (err, result)`
-  where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `result` - if the command succeeded, a document as a class instance.
 
-### `insertMany(docs, [options], callback)`
+### `async insertMany(docs, [options])`
 
-Inserts multiple documents and returns them where:
+Inserts multiple documents and returns and array of model instances where:
 
 - `docs` - an array of document objects to insert.
 - `options` - an options object passed to MongoDB's native
-  [`insertMany`](https://docs.mongodb.com/manual/reference/method/db.collection.insertMany/)
+  [`Collection.insertMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertMany)
   method.
-- `callback` - the callback method using the signature `function (err,
-  results)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `results` - if the command succeeded, an array of documents as a class
-    instances.
 
-### `insertOne(doc, [options], callback)`
+### `async insertOne(doc, [options])`
 
-Inserts a document and returns the new document where:
+Inserts a document and returns a model instance where:
 
 - `doc` - a document object to insert.
 - `options` - an options object passed to MongoDB's native
-  [`insertOne`](https://docs.mongodb.com/manual/reference/method/db.collection.insertOne/)
+  [`Collection.insertOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne)
   method.
-- `callback` - the callback method using the signature `function (err,
-  results)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `results` - if the command succeeded, an array of documents as a class
-    instances.
 
-### `pagedFind(filter, fields, sort, limit, page, callback)`
+### `async pagedFind(filter, limit, page, [options])`
 
-Finds documents with paginated results where:
+Finds documents and returns the results where:
 
 - `filter` - a filter object used to select the documents.
-- `fields` - indicates which fields should be included in the response (default
-  is all). Can be a string with space separated field names.
-- `sort` - indicates how to sort documents. Can be a string with space
-  separated fields. Fields may be prefixed with `-` to indicate decending sort
-  order.
 - `limit` - a number indicating how many results should be returned.
 - `page` - a number indicating the current page.
-- `callback` - is the callback method using the signature `function (err,
-  results)` where:
-  - `err` - if the query failed, the error reason, otherwise null.
-  - `results` - the results object where:
-    - `data` - an array of documents from the query as class instances.
-    - `pages` - an object where:
-      - `current` - a number indicating the current page.
-      - `prev` - a number indicating the previous page.
-      - `hasPrev` - a boolean indicating if there is a previous page.
-      - `next` - a number indicating the next page.
-      - `hasNext` - a boolean indicating if there is a next page.
-      - `total` - a number indicating the total number of pages.
-    - `items` - an object where:
-      - `limit` - a number indicating the how many results should be returned.
-      - `begin` - a number indicating what item number the results begin with.
-      - `end` - a number indicating what item number the results end with.
-      - `total` - a number indicating the total number of matching results.
 
-### `replaceOne(filter, doc, [options], callback)`
+The returned value is an object where:
 
-Replaces a document and returns the count of modified documents where:
+- `data` - an array of model instances.
+- `pages` - an object where:
+  - `current` - a number indicating the current page.
+  - `prev` - a number indicating the previous page.
+  - `hasPrev` - a boolean indicating if there is a previous page.
+  - `next` - a number indicating the next page.
+  - `hasNext` - a boolean indicating if there is a next page.
+  - `total` - a number indicating the total number of pages.
+- `items` - an object where:
+  - `limit` - a number indicating the how many results should be returned.
+  - `begin` - a number indicating what item number the results begin with.
+  - `end` - a number indicating what item number the results end with.
+  - `total` - a number indicating the total number of matching results.
+
+### `async replaceOne(filter, doc, [options])`
+
+Replaces a document and returns a
+[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+where:
 
 - `filter` - a filter object used to select the document to replace.
 - `doc` - the document that replaces the matching document.
 - `options` - an options object passed to MongoDB's native
-  [`replaceOne`](https://docs.mongodb.com/manual/reference/method/db.collection.replaceOne/)
+  [`Collection.replaceOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#replaceOne)
   method.
-- `callback` - the callback method using the signature `function (err, count,
-  result)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the query succeeded, a number indicating how many documents
-    were modified.
-  - `result` - if the query succeeded, the raw result document returned by
-    MongoDB's native driver.
 
 ### `sortAdapter(sorts)`
 
@@ -431,90 +349,102 @@ where:
 Returns a MongoDB friendly sort object.
 
 ```js
-Kitten.sortAdapter('name -email');
+Customer.sortAdapter('name -email');
 
 // { name: 1, email: -1 }
 ```
 
-### `updateMany(filter, update, [options], callback)`
+### `async updateMany(filter, update, [options])`
 
-Updates multiple documents and returns the count of modified documents where:
+Updates multiple documents and returns a
+[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+where:
 
 - `filter` - a filter object used to select the documents to update.
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
-  [`updateMany`](https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/)
+  [`Collection.updateMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany)
   method.
-- `callback` - the callback method using the signature `function (err, count,
-  result)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the command succeeded, a number indicating how many documents
-    were modified.
-  - `result` - if the query succeeded, the raw result document returned by
-    MongoDB's native driver.
 
-### `updateOne(filter, update, [options], callback)`
+### `async updateOne(filter, update, [options])`
 
-Updates a document and returns the count of modified documents where:
+Updates a document and returns a
+[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+where:
 
 - `filter` - a filter object used to select the document to update.
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
-  [`updateOne`](https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/)
+  [`Collection.updateOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateOne)
   method.
-- `callback` - the callback method using the signature `function (err, count,
-  result)` where:
-  - `err` - if the query failed, the error reason, otherwise `null`.
-  - `count` - if the command succeeded, a number indicating how many documents
-    were modified.
-  - `result` - if the query succeeded, the raw result document returned by
-    MongoDB's native driver.
 
-### `validate(callback)`
+### `validate()`
 
-Uses `joi` validation using the static `schema` object property of a model
-class to validate the instance data of a model where:
-
-- `callback` - is the callback method using the signature `function (err,
-  value)` where:
-  - `err` - if validation failed, the error reason, otherwise null.
-  - `value` - the validated value with any type conversions and other modifiers
-    applied.
+Uses `joi` validation internally with the static `schema` property of the model
+to validate the instance data and returns the validated value where:
 
 ```js
-const cc = new Kitten({
-    name: 'Captain Cute'
+const stephen = new Customer({
+    name: 'Stephen Colbert'
 });
 
-cc.validate((err, value) => {
-
-    // handle results
-});
+const result = stephen.validate();
 ```
 
 See: https://github.com/hapijs/joi/blob/master/API.md#validatevalue-schema-options-callback
 
-### `validate(input, callback)`
+### `validate(input)`
 
-Uses `joi` validation using the static `schema` object property of a model
-class to validate `input` where:
+Uses `joi` validation internally with the static `schema` property of the model
+to validate the `input` data and returns the validated value where:
 
 - `input` - is the object to validate.
-- `callback` - is the callback method using the signature `function (err,
-  value)` where:
-  - `err` - if validation failed, the error reason, otherwise null.
-  - `value` - the validated value with any type conversions and other modifiers
-    applied.
 
 ```js
 const data = {
-    name: 'Captain Cute'
+    name: 'Stephen Colbert'
 };
 
-Kitten.validate(data, (err, value) => {
-
-    // handle results
-});
+const result = Customer.validate(data);
 ```
 
 See: https://github.com/hapijs/joi/blob/master/API.md#validatevalue-schema-options-callback
+
+### `with(name)`
+
+For use with multiple named connections (See: [`connect(connection, [options],
+[name])`](#connectconnection-options-name)).
+
+Returns an object containing subset of the model's methods bound to the named
+connection.
+
+Available methods include:
+ - `aggregate`
+ - `collection`
+ - `count`
+ - `createIndexes`
+ - `deleteMany`
+ - `deleteOne`
+ - `distinct`
+ - `find`
+ - `findById`
+ - `findByIdAndDelete`
+ - `findByIdAndUpdate`
+ - `findOne`
+ - `findOneAndDelete`
+ - `findOneAndReplace`
+ - `findOneAndUpdate`
+ - `insertMany`
+ - `insertOne`
+ - `pagedFind`
+ - `replaceOne`
+ - `updateMany`
+ - `updateOne`
+
+```js
+await MongoModels.connect(config.connection, config.options, 'alt');
+
+// ...
+
+const count = await Customer.with('alt').count({});
+```
