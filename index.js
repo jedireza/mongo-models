@@ -29,9 +29,9 @@ const dbFromArgs = function (args) {
 
 
 class MongoModels {
-    constructor(attrs) {
+    constructor(data) {
 
-        const result = this.constructor.validate(attrs);
+        const result = this.constructor.validate(data);
 
         if (result.error) {
             throw result.error;
