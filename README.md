@@ -35,25 +35,24 @@ $ npm install mongo-models
 ### Creating models
 
 You extend the `MongoModels` class to create new model classes that map to
-MongoDB collections. The base class also acts as a singleton so models share
-one connection per process.
+MongoDB collections.
 
 Let's create a `Customer` model.
 
 ```js
 const Joi = require('joi');
-const MongoModels = require('mongo-models');
+const MongoModels = require('../');
 
 class Customer extends MongoModels {
-    static create(name, email, phone, callback) {
+    static async create(name, email, phone) {
 
-      const document = {
+      const document = new Customer({
           name,
           email,
           phone
-      };
+      });
 
-      this.insertOne(document, callback);
+      return this.insertOne(document);
     }
 
     speak() {
@@ -62,7 +61,7 @@ class Customer extends MongoModels {
     }
 }
 
-Customer.collection = 'customers'; // the mongodb collection name
+Customer.collectionName = 'customers'; // the mongodb collection name
 
 Customer.schema = Joi.object().keys({
     name: Joi.string().required(),
@@ -73,67 +72,25 @@ Customer.schema = Joi.object().keys({
 module.exports = Customer;
 ```
 
-### Example
 
-```js
-const Customer = require('./customer');
-const Express = require('express');
-const MongoModels = require('mongo-models');
+## Example
 
-const app = Express();
+Before you can run the example, you need to clone this repo and install the
+dependencies.
 
-MongoModels.connect(process.env.MONGODB_URI, {}, (err, db) => {
+```bash
+$ git clone https://github.com/jedireza/mongo-models.git
+$ cd mongo-models
+$ npm install
+```
 
-    if (err) {
-        // TODO: throw error or try reconnecting
-        return;
-    }
+The example is a simple Express API that based on the Customer model above.
+[View the code.][example]
 
-    // optionally, we can keep a reference to db if we want
-    // access to the db connection outside of our models
-    app.db = db;
+[example]: https://github.com/jedireza/mongo-models/tree/master/example
 
-    console.log('Models are now connected to mongodb.');
-});
-
-app.post('/customers', (req, res) => {
-
-    const name = req.body.name;
-    const email = req.body.email;
-    const phone = req.body.phone;
-
-    Customer.create(name, email, phone, (err, customers) => {
-
-        if (err) {
-            res.status(500).json({ error: 'something blew up' });
-            return;
-        }
-
-        res.json(customers[0]);
-    });
-});
-
-app.get('/customers', (req, res) => {
-
-    const filter = {
-        name: req.query.name
-    };
-
-    Customer.find(filter, (err, customers) => {
-
-        if (err) {
-            res.status(500).json({ error: 'something blew up' });
-            return;
-        }
-
-        res.json(customers);
-    });
-});
-
-app.server.listen(process.env.PORT, () => {
-
-    console.log(`Server is running on port ${process.env.PORT}`);
-});
+```bash
+$ npm run example
 ```
 
 
