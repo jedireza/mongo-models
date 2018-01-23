@@ -60,14 +60,14 @@ class MongoModels {
     }
 
 
-    static async connect(connection, options = {}, connectionName = 'default') {
+    static async connect(connection, options = {}, name = 'default') {
 
         const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
-        MongoModels.clients[connectionName] = client;
-        MongoModels.dbs[connectionName] = client.db(connection.db);
+        MongoModels.clients[name] = client;
+        MongoModels.dbs[name] = client.db(connection.db);
 
-        return MongoModels.dbs[connectionName];
+        return MongoModels.dbs[name];
     }
 
 
