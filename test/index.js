@@ -7,7 +7,10 @@ const Mongodb = require('mongodb');
 
 const lab = exports.lab = Lab.script();
 const config = {
-    uri: 'mongodb://localhost:27017/mongo-models-test',
+    connection: {
+        uri: 'mongodb://localhost:27017',
+        db: 'mongo-models-test'
+    },
     options: {}
 };
 
@@ -16,7 +19,7 @@ lab.experiment('Connections', () => {
 
     lab.test('it connects and disconnects the database', async () => {
 
-        const db = await MongoModels.connect(config.uri, config.options);
+        const db = await MongoModels.connect(config.connection, config.options);
 
         lab.expect(db).to.be.an.instanceof(Mongodb.Db);
         lab.expect(db.serverConfig.isConnected()).to.equal(true);
@@ -29,16 +32,23 @@ lab.experiment('Connections', () => {
 
     lab.test('it throws when the db connection fails', async () => {
 
-        await lab.expect(MongoModels.connect('mongodb://poison')).to.reject();
+        const connection = {
+            uri: 'mongodb://poison',
+            db: 'pill'
+        };
+
+        await lab.expect(MongoModels.connect(connection)).to.reject();
     });
 
 
     lab.test('it connects to multiple databases', async () => {
 
-        const uri = config.uri;
-        const options = config.options;
-        const db = await MongoModels.connect(uri, options);
-        const db2 = await MongoModels.connect(uri + '2', options, 'alt');
+        const connection2 = {
+            uri: config.connection.uri,
+            db: `${config.connection.db}2`
+        };
+        const db = await MongoModels.connect(config.connection, config.options);
+        const db2 = await MongoModels.connect(connection2, config.options, 'alt');
 
         lab.expect(db).to.be.an.instanceof(Mongodb.Db);
         lab.expect(db2).to.be.an.instanceof(Mongodb.Db);
@@ -61,9 +71,7 @@ lab.experiment('Connections', () => {
 
     lab.test('it binds db functions to a named connection using `with` and caches for subsequent use', async () => {
 
-        const uri = config.uri;
-        const options = config.options;
-        const db = await MongoModels.connect(uri, options, 'named');
+        const db = await MongoModels.connect(config.connection, config.options, 'named');
 
         lab.expect(db).to.be.an.instanceof(Mongodb.Db);
         lab.expect(db.serverConfig.isConnected()).to.equal(true);
@@ -292,7 +300,7 @@ lab.experiment('Indexes', () => {
 
         DummyModel.collectionName = 'dummies';
 
-        await MongoModels.connect(config.uri, config.options);
+        await MongoModels.connect(config.connection, config.options);
     });
 
 
@@ -313,6 +321,17 @@ lab.experiment('Indexes', () => {
 
 
 lab.experiment('Helpers', () => {
+
+    lab.before(async () => {
+
+        await MongoModels.connect(config.connection, config.options);
+    });
+
+    lab.after(() => {
+
+        MongoModels.disconnect();
+    });
+
 
     lab.test('it creates a fields document from a string', () => {
 
@@ -373,7 +392,7 @@ lab.experiment('Paged find', () => {
 
         DummyModel.collectionName = 'dummies';
 
-        await MongoModels.connect(config.uri, config.options);
+        await MongoModels.connect(config.connection, config.options);
     });
 
 
@@ -501,7 +520,7 @@ lab.experiment('Proxy methods', () => {
 
         DummyModel.collectionName = 'dummies';
 
-        await MongoModels.connect(config.uri, config.options);
+        await MongoModels.connect(config.connection, config.options);
     });
 
 

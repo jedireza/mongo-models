@@ -60,13 +60,14 @@ class MongoModels {
     }
 
 
-    static async connect(uri, options = {}, name = 'default') {
+    static async connect(connection, options = {}, connectionName = 'default') {
 
-        const db = await Mongodb.MongoClient.connect(uri, options);
+        const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
-        MongoModels.dbs[name] = db;
+        MongoModels.clients[connectionName] = client;
+        MongoModels.dbs[connectionName] = client.db(connection.db);
 
-        return db;
+        return MongoModels.dbs[connectionName];
     }
 
 
@@ -115,7 +116,9 @@ class MongoModels {
         if (name === undefined) {
             Object.keys(MongoModels.dbs).forEach((key) => {
 
-                MongoModels.dbs[key].close();
+                delete MongoModels.dbs[key];
+
+                MongoModels.clients[key].close();
             });
 
             return;
@@ -125,7 +128,9 @@ class MongoModels {
             throw new Error(`Db connection '${name}' not found.`);
         }
 
-        MongoModels.dbs[name].close();
+        delete MongoModels.dbs[name];
+
+        MongoModels.clients[name].close();
     }
 
 
@@ -539,6 +544,7 @@ class MongoModels {
 
 MongoModels._idClass = Mongodb.ObjectID;
 MongoModels.ObjectId = MongoModels.ObjectID = Mongodb.ObjectID;
+MongoModels.clients = {};
 MongoModels.dbs = {};
 
 
