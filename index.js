@@ -319,14 +319,10 @@ class MongoModels {
 
         const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
-        const page = args.pop();
-        const limit = args.pop();
-        let sort = args.pop();
-        let fields = args.pop();
-        const filter = args.pop();
-
-        fields = this.fieldsAdapter(fields);
-        sort = this.sortAdapter(sort);
+        const filter = args.shift();
+        const page = args.shift();
+        const limit = args.shift();
+        const options = args.pop() || {};
 
         const output = {
             data: undefined,
@@ -345,14 +341,13 @@ class MongoModels {
                 total: 0
             }
         };
-        const findOptions = {
+        const findOptions = Object.assign({}, options, {
             limit,
-            skip: (page - 1) * limit,
-            sort
-        };
+            skip: (page - 1) * limit
+        });
         const [count, results] = await Promise.all([
             this.count(db, filter),
-            this.find(db, filter, fields, findOptions)
+            this.find(db, filter, findOptions)
         ]);
 
         output.data = results;
@@ -531,6 +526,7 @@ class MongoModels {
                 findOneAndUpdate: this.findOneAndUpdate.bind(this, db),
                 insertMany: this.insertMany.bind(this, db),
                 insertOne: this.insertOne.bind(this, db),
+                pagedFind: this.pagedFind.bind(this, db),
                 replaceOne: this.replaceOne.bind(this, db),
                 updateMany: this.updateMany.bind(this, db),
                 updateOne: this.updateOne.bind(this, db)

@@ -418,13 +418,14 @@ lab.experiment('Paged find', () => {
         };
 
         const filter = {};
-        const fields = undefined;
         const limit = 10;
         const page = 1;
-        const sort = { _id: -1 };
+        const options = {
+            sort: { _id: -1 }
+        };
 
         await lab.expect(
-            DummyModel.pagedFind(filter, fields, sort, limit, page)
+            DummyModel.pagedFind(filter, limit, page, options)
         ).to.reject();
 
         DummyModel.count = realCount;
@@ -442,12 +443,13 @@ lab.experiment('Paged find', () => {
         await DummyModel.insertMany(documents);
 
         const filter = {};
-        let fields;
         const limit = 10;
         const page = 1;
-        const sort = { _id: -1 };
+        const options = {
+            sort: { _id: -1 }
+        };
         const result = await DummyModel.pagedFind(
-            filter, fields, sort, limit, page
+            filter, limit, page, options
         );
 
         lab.expect(result).to.be.an.object();
@@ -465,12 +467,13 @@ lab.experiment('Paged find', () => {
         await DummyModel.insertMany(documents);
 
         const filter = {};
-        let fields;
         const limit = 2;
         const page = 1;
-        const sort = { _id: -1 };
+        const options = {
+            sort: { _id: -1 }
+        };
         const result = await DummyModel.pagedFind(
-            filter, fields, sort, limit, page
+            filter, limit, page, options
         );
 
         lab.expect(result).to.be.an.object();
@@ -488,12 +491,13 @@ lab.experiment('Paged find', () => {
         await DummyModel.insertMany(documents);
 
         const filter = { 'role.special': { $exists: true } };
-        let fields;
         const limit = 2;
         const page = 1;
-        const sort = { _id: -1 };
+        const options = {
+            sort: { _id: -1 }
+        };
         const result = await DummyModel.pagedFind(
-            filter, fields, sort, limit, page
+            filter, limit, page, options
         );
 
         lab.expect(result).to.be.an.object();
