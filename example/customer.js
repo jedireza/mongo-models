@@ -12,15 +12,15 @@ const schema = Joi.object().keys({
 
 
 class Customer extends MongoModels {
-    static async create(name, email, phone) {
+    static create(name, email, phone) {
 
-      const document = new Customer({
-          name,
-          email,
-          phone
-      });
+        const document = new Customer({
+            name,
+            email,
+            phone
+        });
 
-      return this.insertOne(document);
+        return this.insertOne(document);
     }
 
     speak() {

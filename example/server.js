@@ -1,5 +1,5 @@
 'use strict';
-const BodyParser = require('body-parser')
+const BodyParser = require('body-parser');
 const Customer = require('./customer');
 const Express = require('express');
 const MongoModels = require('../');
@@ -18,7 +18,6 @@ app.post('/customers', async (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
-
     let customers;
 
     try {
