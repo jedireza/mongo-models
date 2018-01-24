@@ -96,7 +96,7 @@ $ npm run example
 
 ## API
 
-See the [API Reference](https://github.com/jedireza/mongo-models/blob/v1.4.0/API.md).
+See the [API Reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
 
 
 ## Have a question?
