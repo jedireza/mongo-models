@@ -45,7 +45,7 @@
 ### `_idClass`
 
 The type used to cast `_id` properties. Defaults to
-[`MongoDB.ObjectID`](http://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
+[`MongoDB.ObjectID`](https://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
 
 If you wanted to use plain strings for your document `_id` properties you could:
 
@@ -76,7 +76,7 @@ Customer.collectionName = 'customers';
 ### `ObjectID`
 
 An alias to
-[`MongoDB.ObjectID`](http://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
+[`MongoDB.ObjectID`](https://mongodb.github.io/node-mongodb-native/3.0/api/ObjectID.html).
 
 ### `schema`
 
@@ -107,18 +107,18 @@ Execute an aggregation framework pipeline against the collection.
 
 - `pipeline` - an array containing all the aggregation framework commands.
 - `options` - an optional options object passed to MongoDB's native
-  [`aggregate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate)
+  [`Collection.aggregate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate)
   method.
 
 ### `collection()`
 
 Returns the underlying
-[`MongoDB.Collection`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html).
+[`MongoDB.Collection`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html).
 
 ### `async connect(connection, [options], [name])`
 
 Connects to a MongoDB server and returns the
-[`MongoDB.Db`](http://mongodb.github.io/node-mongodb-native/3.0/api/Db.html)
+[`MongoDB.Db`](https://mongodb.github.io/node-mongodb-native/3.0/api/Db.html)
 where:
 
 - `connection` - an object where:
@@ -136,7 +136,7 @@ Returns the number of documents matching a `query` where:
 
 - `query` - a filter object used to select the documents to count.
 - `options` - an options object passed to the native
-  [`Collection.count`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count)
+  [`Collection.count`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count)
   method.
 
 ### `async createIndexes(indexSpecs)`
@@ -159,23 +159,23 @@ Customer.indexes = [
 ### `async deleteMany(filter, [options])`
 
 Deletes multiple documents and returns the
-[`Collection.deleteWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
+[`Collection.deleteWriteOpResult`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
 where:
 
 - `filter` - a filter object used to select the documents to delete.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.deleteMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany)
+  [`Collection.deleteMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany)
   method.
 
 ### `async deleteOne(filter, [options])`
 
 Deletes a document and returns the
-[`Collection.deleteWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
+[`Collection.deleteWriteOpResult`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~deleteWriteOpResult)
 where:
 
 - `filter` - a filter object used to select the document to delete.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.deleteOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne)
+  [`Collection.deleteOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne)
   method.
 
 ### `disconnect([name])`
@@ -212,7 +212,7 @@ Finds documents and returns an array of model instances where:
 
 - `query` - a query object used to select the documents.
 - `options` - an options object passed to MongoDB's native
-  [`find`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
+  [`Collection.find`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
   method.
 
 ### `async findById(id, [options])`
@@ -222,7 +222,7 @@ Finds a document by `_id` and returns a model instance where:
 - `id` - a string value of the `_id` to find. The `id` will be casted to the
   type of `_idClass`.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.findOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
+  [`Collection.findOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
 
 ### `async findByIdAndDelete(id)`
@@ -240,7 +240,7 @@ Finds a document by `_id`, updates it and returns a model instance where:
   type of `_idClass`.
 - `update` - an object containing the fields/values to be updated.
 - `options` - an optional options object passed to MongoDB's native
-  [`Collection.findOneAndUpdate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
+  [`Collection.findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
 
 ### `async findOne(query, [options])`
@@ -249,7 +249,7 @@ Finds one document matching the `query` and returns a model intance where:
 
 - `query` - a filter object used to select the document.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.findOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
+  [`Collection.findOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
 
 ### `async findOneAndDelete(filter, [options])`
@@ -259,7 +259,7 @@ where:
 
 - `filter` - a filter object used to select the document to delete.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.findOneAndDelete`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete)
+  [`Collection.findOneAndDelete`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete)
   method.
 
 ### `async findOneAndReplace(filter, replacement, [options])`
@@ -270,7 +270,7 @@ where:
 - `filter` - a filter object used to select the document to delete.
 - `replacement` - the document replacing the matching document.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.findOneAndReplace`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndReplace)
+  [`Collection.findOneAndReplace`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndReplace)
   method. Defaults to `{ returnOriginal: false }`.
 
 ### `async findOneAndUpdate(filter, update, [options])`
@@ -281,7 +281,7 @@ where:
 - `filter` - a filter object used to select the document to update.
 - `update` - an object containing the fields/values to be updated.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.findOneAndUpdate`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
+  [`Collection.findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
 
 ### `async insertMany(docs, [options])`
@@ -290,7 +290,7 @@ Inserts multiple documents and returns and array of model instances where:
 
 - `docs` - an array of document objects to insert.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.insertMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertMany)
+  [`Collection.insertMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertMany)
   method.
 
 ### `async insertOne(doc, [options])`
@@ -299,7 +299,7 @@ Inserts a document and returns a model instance where:
 
 - `doc` - a document object to insert.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.insertOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne)
+  [`Collection.insertOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne)
   method.
 
 ### `async pagedFind(filter, limit, page, [options])`
@@ -329,13 +329,13 @@ The returned value is an object where:
 ### `async replaceOne(filter, doc, [options])`
 
 Replaces a document and returns a
-[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+[`Collection.updateWriteOpResult`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
 where:
 
 - `filter` - a filter object used to select the document to replace.
 - `doc` - the document that replaces the matching document.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.replaceOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#replaceOne)
+  [`Collection.replaceOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#replaceOne)
   method.
 
 ### `sortAdapter(sorts)`
@@ -357,25 +357,25 @@ Customer.sortAdapter('name -email');
 ### `async updateMany(filter, update, [options])`
 
 Updates multiple documents and returns a
-[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+[`Collection.updateWriteOpResult`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
 where:
 
 - `filter` - a filter object used to select the documents to update.
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.updateMany`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany)
+  [`Collection.updateMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany)
   method.
 
 ### `async updateOne(filter, update, [options])`
 
 Updates a document and returns a
-[`Collection.updateWriteOpResult`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
+[`Collection.updateWriteOpResult`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#~updateWriteOpResult)
 where:
 
 - `filter` - a filter object used to select the document to update.
 - `update` - the update operations object.
 - `options` - an options object passed to MongoDB's native
-  [`Collection.updateOne`](http://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateOne)
+  [`Collection.updateOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateOne)
   method.
 
 ### `validate()`
