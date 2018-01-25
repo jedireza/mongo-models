@@ -418,7 +418,7 @@ See: https://github.com/hapijs/joi/blob/master/API.md#validatevalue-schema-optio
 For use with multiple named connections (See: [`connect(connection, [options],
 [name])`](#async-connectconnection-options-name)).
 
-Returns an object containing subset of the model's methods bound to the named
+Returns an object containing a subset of the model's methods bound to the named
 connection.
 
 Available methods include:
