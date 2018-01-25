@@ -309,6 +309,9 @@ Finds documents and returns the results where:
 - `filter` - a filter object used to select the documents.
 - `limit` - a number indicating how many results should be returned.
 - `page` - a number indicating the current page.
+- `options` - an options object passed to MongoDB's native
+  [`Collection.find`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
+  method.
 
 The returned value is an object where:
 
