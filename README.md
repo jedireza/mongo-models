@@ -25,7 +25,11 @@ data schema.
 
 ## API reference
 
-See the [API reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
+See the current [v2.x API
+reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
+
+See the old [v1.x API
+reference](https://github.com/jedireza/mongo-models/blob/996c21e0e18c4cf70e665d319c7cf5eaa9cff846/API.md).
 
 
 ## Install
