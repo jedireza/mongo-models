@@ -23,6 +23,11 @@ We're also big fans of the object schema validation library
 data schema.
 
 
+## API reference
+
+See the [API reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
+
+
 ## Install
 
 ```bash
@@ -163,11 +168,6 @@ The example is a simple Express API that based on the Customer model above.
 ```bash
 $ npm run example
 ```
-
-
-## API
-
-See the [API Reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
 
 
 ## Have a question?
