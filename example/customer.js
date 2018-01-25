@@ -3,7 +3,7 @@ const Joi = require('joi');
 const MongoModels = require('../');
 
 
-const schema = Joi.object().keys({
+const schema = Joi.object({
     _id: Joi.object(),
     name: Joi.string().required(),
     email: Joi.string().email(),

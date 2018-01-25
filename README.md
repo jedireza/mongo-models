@@ -49,7 +49,7 @@ Let's create a `Customer` model.
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
-const schema = Joi.object().keys({
+const schema = Joi.object({
     _id: Joi.object(),
     name: Joi.string().required(),
     email: Joi.string().email(),
@@ -162,8 +162,9 @@ $ cd mongo-models
 $ npm install
 ```
 
-The example is a simple Express API that based on the Customer model above.
-[View the code.](https://github.com/jedireza/mongo-models/tree/master/example)
+The example is a simple Express API that uses the Customer model we created
+above. [View the
+code.](https://github.com/jedireza/mongo-models/tree/master/example)
 
 ```bash
 $ npm run example
