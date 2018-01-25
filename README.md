@@ -1,6 +1,6 @@
 # mongo-models
 
-Map JavaScript classes to MongoDB collections.
+JavaScript class interfaces to MongoDB collections.
 
 [![Build Status](https://img.shields.io/travis/jedireza/mongo-models.svg)](https://travis-ci.org/jedireza/mongo-models)
 [![Dependency Status](https://img.shields.io/david/jedireza/mongo-models.svg)](https://david-dm.org/jedireza/mongo-models)
@@ -23,6 +23,11 @@ We're also big fans of the object schema validation library
 data schema.
 
 
+## API reference
+
+See the [API reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
+
+
 ## Install
 
 ```bash
@@ -35,25 +40,32 @@ $ npm install mongo-models
 ### Creating models
 
 You extend the `MongoModels` class to create new model classes that map to
-MongoDB collections. The base class also acts as a singleton so models share
-one connection per process.
+MongoDB collections.
 
 Let's create a `Customer` model.
 
 ```js
+'use strict';
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
+const schema = Joi.object().keys({
+    _id: Joi.object(),
+    name: Joi.string().required(),
+    email: Joi.string().email(),
+    phone: Joi.string()
+});
+
 class Customer extends MongoModels {
-    static create(name, email, phone, callback) {
+    static create(name, email, phone) {
 
-      const document = {
-          name,
-          email,
-          phone
-      };
+        const document = new Customer({
+            name,
+            email,
+            phone
+        });
 
-      this.insertOne(document, callback);
+        return this.insertOne(document);
     }
 
     speak() {
@@ -62,84 +74,100 @@ class Customer extends MongoModels {
     }
 }
 
-Customer.collection = 'customers'; // the mongodb collection name
-
-Customer.schema = Joi.object().keys({
-    name: Joi.string().required(),
-    email: Joi.string().email(),
-    phone: Joi.string()
-});
+Customer.collectionName = 'customers'; // the mongodb collection name
+Customer.schema = schema;
 
 module.exports = Customer;
 ```
 
-### Example
+
+## Example
 
 ```js
+'use strict';
+const BodyParser = require('body-parser');
 const Customer = require('./customer');
 const Express = require('express');
 const MongoModels = require('mongo-models');
 
 const app = Express();
+const connection = {
+    uri: process.env.MONGODB_URI,
+    db: process.env.MONGODB_NAME
+};
 
-MongoModels.connect(process.env.MONGODB_URI, {}, (err, db) => {
+app.use(BodyParser.json());
 
-    if (err) {
-        // TODO: throw error or try reconnecting
-        return;
-    }
-
-    // optionally, we can keep a reference to db if we want
-    // access to the db connection outside of our models
-    app.db = db;
-
-    console.log('Models are now connected to mongodb.');
-});
-
-app.post('/customers', (req, res) => {
+app.post('/customers', async (req, res) => {
 
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
+    let customers;
 
-    Customer.create(name, email, phone, (err, customers) => {
+    try {
+        customers = await Customer.create(name, email, phone);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'something blew up' });
+        return;
+    }
 
-        if (err) {
-            res.status(500).json({ error: 'something blew up' });
-            return;
-        }
-
-        res.json(customers[0]);
-    });
+    res.json(customers[0]);
 });
 
-app.get('/customers', (req, res) => {
+app.get('/customers', async (req, res) => {
 
-    const filter = {
-        name: req.query.name
-    };
+    const name = req.query.name;
+    const filter = {};
 
-    Customer.find(filter, (err, customers) => {
+    if (name) {
+        filter.name = name;
+    }
 
-        if (err) {
-            res.status(500).json({ error: 'something blew up' });
-            return;
-        }
+    let customers;
 
-        res.json(customers);
-    });
+    try {
+        customers = await Customer.find(filter);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'something blew up' });
+        return;
+    }
+
+    res.json(customers);
 });
 
-app.server.listen(process.env.PORT, () => {
+const main = async function () {
+
+    await MongoModels.connect(connection, {});
+
+    console.log('Models are now connected.');
+
+    await app.listen(process.env.PORT);
 
     console.log(`Server is running on port ${process.env.PORT}`);
-});
+};
+
+main();
 ```
 
+### Run the example
 
-## API
+To run the example, first clone this repo and install the dependencies.
 
-See the [API reference](https://github.com/jedireza/mongo-models/blob/master/API.md).
+```bash
+$ git clone https://github.com/jedireza/mongo-models.git
+$ cd mongo-models
+$ npm install
+```
+
+The example is a simple Express API that based on the Customer model above.
+[View the code.](https://github.com/jedireza/mongo-models/tree/master/example)
+
+```bash
+$ npm run example
+```
 
 
 ## Have a question?
