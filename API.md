@@ -5,6 +5,7 @@
 - [Properties](#properties)
   - [`_idClass`](#_idclass)
   - [`collectionName`](#collectionname)
+  - [`indexes`](#indexes)
   - [`ObjectID`](#objectid)
   - [`schema`](#schema)
 - [Methods](#methods)
@@ -13,7 +14,7 @@
   - [`collection()`](#collection)
   - [`async connect(connection, [options], [name])`](#async-connectconnection-options-name)
   - [`async count(query, [options])`](#async-countquery-options)
-  - [`async createIndexes(indexSpecs)`](#async-createindexesindexspecs)
+  - [`async createIndexes(indexSpecs, [options])`](#async-createindexesindexspecs-options)
   - [`async deleteMany(filter, [options])`](#async-deletemanyfilter-options)
   - [`async deleteOne(filter, [options])`](#async-deleteonefilter-options)
   - [`disconnect([name])`](#disconnectname)
@@ -71,6 +72,27 @@ The name of the collection in MongoDB.
 
 ```js
 Customer.collectionName = 'customers';
+```
+
+### `indexes`
+
+An array of index specifications for this model. [See the index
+specification](http://docs.mongodb.org/manual/reference/command/createIndexes/).
+
+```js
+Customer.indexes = [
+    { key: { name: 1 } },
+    { key: { email: -1 } }
+];
+```
+
+Note: These are just the definitions, the [`async createIndexes(indexSpecs,
+[options])`](#async-createindexesindexspecs-options) method doesn't
+automatically use this property. You could pass this property to that method
+though:
+
+```js
+const result = await Customer.createIndexes(Customer.indexes);
 ```
 
 ### `ObjectID`
@@ -139,13 +161,16 @@ Returns the number of documents matching a `query` where:
   [`Collection.count`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count)
   method.
 
-### `async createIndexes(indexSpecs)`
+### `async createIndexes(indexSpecs, [options])`
 
 Creates multiple indexes in the collection and returns the result where:
 
 - `indexSpecs` - an array of objects containing index specifications to be
   created. [See the index
-  specification](http://docs.mongodb.org/manual/reference/command/createIndexes/)
+  specification](http://docs.mongodb.org/manual/reference/command/createIndexes/).
+- `options` - an optional object passed to the native
+  [`Collection.createIndexes`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#createIndexes)
+  method.
 
 Indexes are defined as a static property on your models like:
 
