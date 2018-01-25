@@ -106,7 +106,7 @@ Constructs a new instance of your class using the data provided where:
 Execute an aggregation framework pipeline against the collection.
 
 - `pipeline` - an array containing all the aggregation framework commands.
-- `options` - an optional options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.aggregate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate)
   method.
 
@@ -135,7 +135,7 @@ where:
 Returns the number of documents matching a `query` where:
 
 - `query` - a filter object used to select the documents to count.
-- `options` - an options object passed to the native
+- `options` - an optional object passed to the native
   [`Collection.count`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count)
   method.
 
@@ -163,7 +163,7 @@ Deletes multiple documents and returns the
 where:
 
 - `filter` - a filter object used to select the documents to delete.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.deleteMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany)
   method.
 
@@ -174,7 +174,7 @@ Deletes a document and returns the
 where:
 
 - `filter` - a filter object used to select the document to delete.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.deleteOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne)
   method.
 
@@ -211,7 +211,7 @@ Customer.fieldsAdapter('name -email');
 Finds documents and returns an array of model instances where:
 
 - `query` - a query object used to select the documents.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.find`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
   method.
 
@@ -221,7 +221,7 @@ Finds a document by `_id` and returns a model instance where:
 
 - `id` - a string value of the `_id` to find. The `id` will be casted to the
   type of `_idClass`.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
 
@@ -239,7 +239,7 @@ Finds a document by `_id`, updates it and returns a model instance where:
 - `id` - a string value of the `_id` to find. The `id` will be casted to the
   type of `_idClass`.
 - `update` - an object containing the fields/values to be updated.
-- `options` - an optional options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
 
@@ -248,7 +248,7 @@ Finds a document by `_id`, updates it and returns a model instance where:
 Finds one document matching the `query` and returns a model intance where:
 
 - `query` - a filter object used to select the document.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne)
   method.
 
@@ -258,7 +258,7 @@ Finds one document matching a `filter`, deletes it and returns a model instance
 where:
 
 - `filter` - a filter object used to select the document to delete.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOneAndDelete`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete)
   method.
 
@@ -269,7 +269,7 @@ where:
 
 - `filter` - a filter object used to select the document to delete.
 - `replacement` - the document replacing the matching document.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOneAndReplace`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndReplace)
   method. Defaults to `{ returnOriginal: false }`.
 
@@ -280,7 +280,7 @@ where:
 
 - `filter` - a filter object used to select the document to update.
 - `update` - an object containing the fields/values to be updated.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.findOneAndUpdate`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate)
   method. Defaults to `{ returnOriginal: false }`.
 
@@ -289,7 +289,7 @@ where:
 Inserts multiple documents and returns and array of model instances where:
 
 - `docs` - an array of document objects to insert.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.insertMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertMany)
   method.
 
@@ -298,7 +298,7 @@ Inserts multiple documents and returns and array of model instances where:
 Inserts a document and returns a model instance where:
 
 - `doc` - a document object to insert.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.insertOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne)
   method.
 
@@ -309,7 +309,7 @@ Finds documents and returns the results where:
 - `filter` - a filter object used to select the documents.
 - `limit` - a number indicating how many results should be returned.
 - `page` - a number indicating the current page.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.find`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
   method.
 
@@ -337,7 +337,7 @@ where:
 
 - `filter` - a filter object used to select the document to replace.
 - `doc` - the document that replaces the matching document.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.replaceOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#replaceOne)
   method.
 
@@ -365,7 +365,7 @@ where:
 
 - `filter` - a filter object used to select the documents to update.
 - `update` - the update operations object.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.updateMany`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany)
   method.
 
@@ -377,7 +377,7 @@ where:
 
 - `filter` - a filter object used to select the document to update.
 - `update` - the update operations object.
-- `options` - an options object passed to MongoDB's native
+- `options` - an optional object passed to MongoDB's native
   [`Collection.updateOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateOne)
   method.
 
