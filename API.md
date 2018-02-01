@@ -30,7 +30,7 @@
   - [`async findOneAndUpdate(filter, update, [options])`](#async-findoneandupdatefilter-update-options)
   - [`async insertMany(docs, [options])`](#async-insertmanydocs-options)
   - [`async insertOne(doc, [options])`](#async-insertonedoc-options)
-  - [`async pagedFind(filter, limit, page, [options])`](#async-pagedfindfilter-limit-page-options)
+  - [`async pagedFind(filter, page, limit, [options])`](#async-pagedfindfilter-page-limit-options)
   - [`async replaceOne(filter, doc, [options])`](#async-replaceonefilter-doc-options)
   - [`sortAdapter(sorts)`](#sortadaptersorts)
   - [`async updateMany(filter, update, [options])`](#async-updatemanyfilter-update-options)
@@ -327,13 +327,13 @@ Inserts a document and returns a model instance where:
   [`Collection.insertOne`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne)
   method.
 
-### `async pagedFind(filter, limit, page, [options])`
+### `async pagedFind(filter, page, limit, [options])`
 
 Finds documents and returns the results where:
 
 - `filter` - a filter object used to select the documents.
-- `limit` - a number indicating how many results should be returned.
 - `page` - a number indicating the current page.
+- `limit` - a number indicating how many results should be returned.
 - `options` - an optional object passed to MongoDB's native
   [`Collection.find`](https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find)
   method.
