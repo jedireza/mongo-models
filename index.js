@@ -62,6 +62,10 @@ class MongoModels {
 
     static async connect(connection, options = {}, name = 'default') {
 
+        if (!options.hasOwnProperty('useNewUrlParser')) {
+            options.useNewUrlParser = true;
+        }
+
         const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
         MongoModels.clients[name] = client;
@@ -77,7 +81,7 @@ class MongoModels {
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.count.apply(collection, args);
+        return collection.countDocuments.apply(collection, args);
     }
 
 
@@ -215,7 +219,7 @@ class MongoModels {
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
-        const update = args.shift();
+        const update = { $set: args.shift() };
         const defaultOptions = {
             returnOriginal: false
         };
@@ -277,7 +281,7 @@ class MongoModels {
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
-        const doc = args.shift();
+        const doc = { $set: args.shift() };
         const defaultOptions = {
             returnOriginal: false
         };

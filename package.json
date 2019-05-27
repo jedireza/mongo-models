@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "example": "MONGODB_URI='mongodb://localhost:27017' MONGODB_NAME='mongo-models-test' PORT=8080 node example/server.js",
-    "test": "lab -c -L --assert code",
+    "test": "lab -c -L -m 5000 --assert code",
     "toc": "hapitoc"
   },
   "repository": {
@@ -29,15 +29,12 @@
   },
   "homepage": "https://github.com/jedireza/mongo-models",
   "devDependencies": {
-    "body-parser": "1.x.x",
     "code": "5.x.x",
-    "express": "4.x.x",
-    "hapitoc": "1.x.x",
     "lab": "15.x.x",
-    "mongodb": "3.x.x"
+    "mongodb": "3.1.x"
   },
   "peerDependencies": {
-    "mongodb": "3.x.x"
+    "mongodb": "3.1.x"
   },
   "dependencies": {
     "hoek": "5.x.x",
