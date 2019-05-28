@@ -49,9 +49,7 @@ class MongoModels {
 
     static async connect(connection, options = {}, name = 'default') {
 
-        if (!options.hasOwnProperty('useNewUrlParser')) {
-            options.useNewUrlParser = true;
-        }
+        options = Hoek.applyToDefaults({ useNewUrlParser : true }, options);
 
         const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
@@ -193,12 +191,22 @@ class MongoModels {
     }
 
 
+    static wrapWithAtomicOperator(update) {
+
+        if (!Hoek.contain(Object.keys(update), ['$set', '$unset', '$rename'], { part: true } )) {
+            update = { $set: update };
+        }
+
+        return update;
+    }
+
+
     static async findByIdAndUpdate(...args) {
 
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
-        const update = { $set: args.shift() };
+        const update = MongoModels.wrapWithAtomicOperator(args.shift());
         const defaultOptions = {
             returnOriginal: false
         };
@@ -256,7 +264,7 @@ class MongoModels {
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
-        const doc = { $set: args.shift() };
+        const doc = MongoModels.wrapWithAtomicOperator(args.shift());
         const defaultOptions = {
             returnOriginal: false
         };
