@@ -191,22 +191,12 @@ class MongoModels {
     }
 
 
-    static wrapWithAtomicOperator(update) {
-
-        if (!Hoek.contain(Object.keys(update), ['$set', '$unset', '$rename'], { part: true } )) {
-            update = { $set: update };
-        }
-
-        return update;
-    }
-
-
     static async findByIdAndUpdate(...args) {
 
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
-        const update = MongoModels.wrapWithAtomicOperator(args.shift());
+        const update = args.shift();
         const defaultOptions = {
             returnOriginal: false
         };
@@ -264,7 +254,7 @@ class MongoModels {
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
-        const doc = MongoModels.wrapWithAtomicOperator(args.shift());
+        const doc = args.shift();
         const defaultOptions = {
             returnOriginal: false
         };

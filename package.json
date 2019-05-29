@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "example": "MONGODB_URI='mongodb://localhost:27017' MONGODB_NAME='mongo-models-test' PORT=8080 node example/server.js",
-    "test": "lab -c -L -m 5000 --assert @hapi/code",
+    "test": "lab -c -L --assert @hapi/code",
     "toc": "hapitoc"
   },
   "repository": {

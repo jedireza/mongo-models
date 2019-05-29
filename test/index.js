@@ -31,7 +31,7 @@ lab.experiment('Connections', () => {
     });
 
 
-    lab.test('it throws when the db connection fails', async () => {
+    lab.test('it throws when the db connection fails', { timeout: 5000 }, async () => {
 
         const connection = {
             uri: 'mongodb://poison',
@@ -754,24 +754,9 @@ lab.experiment('Proxy methods', () => {
         const testDocs = await DummyModel.insertOne(document);
         const id = testDocs[0]._id;
         const update = {
-            name: 'New Name'
-        };
-        const result = await DummyModel.findByIdAndUpdate(id, update);
-
-        lab.expect(result).to.be.an.instanceOf(DummyModel);
-    });
-
-
-    lab.test('it updates a single document via findByIdAndUpdate with atomic operator', async () => {
-
-        const document = {
-            name: 'Ren'
-        };
-        const testDocs = await DummyModel.insertOne(document);
-        const id = testDocs[0]._id;
-        const update = { $set: {
-            name: 'New Name'
-        }
+            $set: {
+                name: 'New Name'
+            }
         };
         const result = await DummyModel.findByIdAndUpdate(id, update);
 
@@ -787,7 +772,9 @@ lab.experiment('Proxy methods', () => {
         const testDocs = await DummyModel.insertOne(document);
         const id = testDocs[0]._id;
         const update = {
-            name: 'New Name'
+            $set: {
+                name: 'New Name'
+            }
         };
         const options = {
             returnOriginal: false
@@ -807,7 +794,7 @@ lab.experiment('Proxy methods', () => {
         await DummyModel.insertOne(document);
 
         const filter = { name: 'Ren' };
-        const update = { name: 'New Name' };
+        const update = { $set: { name: 'New Name' } };
         const result = await DummyModel.findOneAndUpdate(filter, update);
 
         lab.expect(result).to.be.an.instanceOf(DummyModel);
@@ -823,7 +810,7 @@ lab.experiment('Proxy methods', () => {
         await DummyModel.insertOne(document);
 
         const filter = { name: 'Ren' };
-        const update = { name: 'New Name' };
+        const update = { $set: { name: 'New Name' } };
         const options = { returnOriginal: true };
         const result = await DummyModel.findOneAndUpdate(filter, update, options);
 
