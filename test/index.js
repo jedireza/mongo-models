@@ -1,6 +1,7 @@
 'use strict';
-const Joi = require('joi');
-const Lab = require('lab');
+
+const Joi = require('@hapi/joi');
+const Lab = require('@hapi/lab');
 const MongoModels = require('../index');
 const Mongodb = require('mongodb');
 
@@ -8,7 +9,7 @@ const Mongodb = require('mongodb');
 const lab = exports.lab = Lab.script();
 const config = {
     connection: {
-        uri: 'mongodb://localhost:27017',
+        uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
         db: 'mongo-models-test'
     },
     options: {}
@@ -30,7 +31,7 @@ lab.experiment('Connections', () => {
     });
 
 
-    lab.test('it throws when the db connection fails', async () => {
+    lab.test('it throws when the db connection fails', { timeout: 5000 }, async () => {
 
         const connection = {
             uri: 'mongodb://poison',
@@ -76,7 +77,7 @@ lab.experiment('Connections', () => {
         lab.expect(db).to.be.an.instanceof(Mongodb.Db);
         lab.expect(db.serverConfig.isConnected()).to.equal(true);
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.collectionName = 'dummies';
 
@@ -96,7 +97,7 @@ lab.experiment('Connections', () => {
 
     lab.test('it throws when trying to use `with` and the named db misses', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         lab.expect(DummyModel.with.bind(DummyModel, 'poison')).to.throw();
     });
@@ -107,7 +108,7 @@ lab.experiment('Instance construction', () => {
 
     lab.test('it constructs an instance using the schema', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.schema = Joi.object().keys({
             name: Joi.string().required(),
@@ -152,7 +153,7 @@ lab.experiment('Instance construction', () => {
 
     lab.test('it throws if schema validation fails when creating an instance using the schema', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.schema = Joi.object().keys({
             name: Joi.string().required()
@@ -178,7 +179,7 @@ lab.experiment('Validation', () => {
 
     lab.test('it returns the Joi validation results of a SubClass', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.schema = Joi.object().keys({
             name: Joi.string().required()
@@ -190,7 +191,7 @@ lab.experiment('Validation', () => {
 
     lab.test('it returns the Joi validation results of a SubClass instance', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.schema = Joi.object().keys({
             name: Joi.string().required()
@@ -206,7 +207,6 @@ lab.experiment('Validation', () => {
 lab.experiment('Result factory', () => {
 
     let DummyModel;
-
 
     lab.before(() => {
 
@@ -365,7 +365,7 @@ lab.experiment('Helpers', () => {
 
     lab.test('it returns the raw mongodb collection', () => {
 
-        class DummyModel extends MongoModels {};
+        class DummyModel extends MongoModels {}
 
         DummyModel.collectionName = 'dummies';
 
@@ -754,7 +754,9 @@ lab.experiment('Proxy methods', () => {
         const testDocs = await DummyModel.insertOne(document);
         const id = testDocs[0]._id;
         const update = {
-            name: 'New Name'
+            $set: {
+                name: 'New Name'
+            }
         };
         const result = await DummyModel.findByIdAndUpdate(id, update);
 
@@ -770,7 +772,9 @@ lab.experiment('Proxy methods', () => {
         const testDocs = await DummyModel.insertOne(document);
         const id = testDocs[0]._id;
         const update = {
-            name: 'New Name'
+            $set: {
+                name: 'New Name'
+            }
         };
         const options = {
             returnOriginal: false
@@ -790,7 +794,7 @@ lab.experiment('Proxy methods', () => {
         await DummyModel.insertOne(document);
 
         const filter = { name: 'Ren' };
-        const update = { name: 'New Name' };
+        const update = { $set: { name: 'New Name' } };
         const result = await DummyModel.findOneAndUpdate(filter, update);
 
         lab.expect(result).to.be.an.instanceOf(DummyModel);
@@ -806,7 +810,7 @@ lab.experiment('Proxy methods', () => {
         await DummyModel.insertOne(document);
 
         const filter = { name: 'Ren' };
-        const update = { name: 'New Name' };
+        const update = { $set: { name: 'New Name' } };
         const options = { returnOriginal: true };
         const result = await DummyModel.findOneAndUpdate(filter, update, options);
 

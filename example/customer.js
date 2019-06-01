@@ -1,5 +1,6 @@
 'use strict';
-const Joi = require('joi');
+
+const Joi = require('@hapi/joi');
 const MongoModels = require('../');
 
 
@@ -29,9 +30,7 @@ class Customer extends MongoModels {
     }
 }
 
-
 Customer.collectionName = 'customers'; // the mongodb collection name
 Customer.schema = schema;
-
 
 module.exports = Customer;

@@ -1,19 +1,8 @@
 'use strict';
-const Hoek = require('hoek');
-const Joi = require('joi');
+
+const Hoek = require('@hapi/hoek');
+const Joi = require('@hapi/joi');
 const Mongodb = require('mongodb');
-
-
-const argsFromArguments = function (argumentz) {
-
-    const args = new Array(argumentz.length);
-
-    for (let i = 0; i < args.length; ++i) {
-        args[i] = argumentz[i];
-    }
-
-    return args;
-};
 
 
 const dbFromArgs = function (args) {
@@ -41,19 +30,17 @@ class MongoModels {
     }
 
 
-    static aggregate() {
+    static aggregate(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.aggregate.apply(collection, args).toArray();
+        return collection.aggregate(...args).toArray();
     }
 
 
-    static collection() {
+    static collection(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
 
         return db.collection(this.collectionName);
@@ -61,6 +48,8 @@ class MongoModels {
 
 
     static async connect(connection, options = {}, name = 'default') {
+
+        options = Hoek.applyToDefaults({ useNewUrlParser : true }, options);
 
         const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
@@ -71,43 +60,39 @@ class MongoModels {
     }
 
 
-    static count() {
+    static count(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.count.apply(collection, args);
+        return collection.countDocuments(...args);
     }
 
 
-    static createIndexes() {
+    static createIndexes(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.createIndexes.apply(collection, args);
+        return collection.createIndexes(...args);
     }
 
 
-    static deleteMany() {
+    static deleteMany(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.deleteMany.apply(collection, args);
+        return collection.deleteMany(...args);
     }
 
 
-    static deleteOne() {
+    static deleteOne(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.deleteOne.apply(collection, args);
+        return collection.deleteOne(...args);
     }
 
 
@@ -134,13 +119,12 @@ class MongoModels {
     }
 
 
-    static distinct() {
+    static distinct(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
 
-        return collection.distinct.apply(collection, args);
+        return collection.distinct(...args);
     }
 
 
@@ -157,6 +141,7 @@ class MongoModels {
                     if (!include) {
                         field = field.slice(1);
                     }
+
                     document[field] = include;
                 }
             });
@@ -168,20 +153,18 @@ class MongoModels {
     }
 
 
-    static async find() {
+    static async find(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
-        const result = await collection.find.apply(collection, args).toArray();
+        const result = await collection.find(...args).toArray();
 
         return this.resultFactory(result);
     }
 
 
-    static async findById() {
+    static async findById(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
@@ -189,15 +172,14 @@ class MongoModels {
 
         args.unshift(filter);
 
-        const result = await collection.findOne.apply(collection, args);
+        const result = await collection.findOne(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async findByIdAndDelete() {
+    static async findByIdAndDelete(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
@@ -209,9 +191,8 @@ class MongoModels {
     }
 
 
-    static async findByIdAndUpdate() {
+    static async findByIdAndUpdate(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const id = args.shift();
@@ -227,31 +208,28 @@ class MongoModels {
     }
 
 
-    static async findOne() {
+    static async findOne(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
-        const result = await collection.findOne.apply(collection, args);
+        const result = await collection.findOne(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async findOneAndDelete() {
+    static async findOneAndDelete(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
-        const result = await collection.findOneAndDelete.apply(collection, args);
+        const result = await collection.findOneAndDelete(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async findOneAndReplace() {
+    static async findOneAndReplace(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
@@ -265,15 +243,14 @@ class MongoModels {
         args.push(doc);
         args.push(options);
 
-        const result = await collection.findOneAndReplace.apply(collection, args);
+        const result = await collection.findOneAndReplace(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async findOneAndUpdate() {
+    static async findOneAndUpdate(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
@@ -287,37 +264,34 @@ class MongoModels {
         args.push(doc);
         args.push(options);
 
-        const result = await collection.findOneAndUpdate.apply(collection, args);
+        const result = await collection.findOneAndUpdate(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async insertMany() {
+    static async insertMany(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
-        const result = await collection.insertMany.apply(collection, args);
+        const result = await collection.insertMany(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async insertOne() {
+    static async insertOne(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
-        const result = await collection.insertOne.apply(collection, args);
+        const result = await collection.insertOne(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async pagedFind() {
+    static async pagedFind(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const filter = args.shift();
         const page = args.shift();
@@ -370,9 +344,8 @@ class MongoModels {
     }
 
 
-    static async replaceOne() {
+    static async replaceOne(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
@@ -383,7 +356,7 @@ class MongoModels {
         args.push(doc);
         args.push(options);
 
-        const result = await collection.replaceOne.apply(collection, args);
+        const result = await collection.replaceOne(...args);
 
         return this.resultFactory(result);
     }
@@ -437,6 +410,7 @@ class MongoModels {
                     if (order === -1) {
                         sort = sort.slice(1);
                     }
+
                     document[sort] = order;
                 }
             });
@@ -448,9 +422,8 @@ class MongoModels {
     }
 
 
-    static async updateMany() {
+    static async updateMany(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
@@ -461,15 +434,14 @@ class MongoModels {
         args.push(update);
         args.push(options);
 
-        const result = await collection.updateMany.apply(collection, args);
+        const result = await collection.updateMany(...args);
 
         return this.resultFactory(result);
     }
 
 
-    static async updateOne() {
+    static async updateOne(...args) {
 
-        const args = argsFromArguments(arguments);
         const db = dbFromArgs(args);
         const collection = db.collection(this.collectionName);
         const filter = args.shift();
@@ -480,7 +452,7 @@ class MongoModels {
         args.push(update);
         args.push(options);
 
-        const result = await collection.updateOne.apply(collection, args);
+        const result = await collection.updateOne(...args);
 
         return this.resultFactory(result);
     }
