@@ -214,7 +214,8 @@ lab.experiment('Result factory', () => {
 
         DummyModel.schema = Joi.object().keys({
             _id: Joi.string(),
-            name: Joi.string().required()
+            name: Joi.string().required(),
+            value: Joi.object()
         });
     });
 
@@ -250,7 +251,7 @@ lab.experiment('Result factory', () => {
     });
 
 
-    lab.test('it returns a instance for a `findOpResult` object', () => {
+    lab.test('it returns an instance for a `findOpResult` object', () => {
 
         const input = {
             value: {
@@ -273,6 +274,21 @@ lab.experiment('Result factory', () => {
         const result = DummyModel.resultFactory(input);
 
         lab.expect(result).to.not.exist();
+    });
+
+
+    lab.test('it returns an instance from an object that looks like a `findOpResult` (has a `value` field), but has an `_id` field', () => {
+
+        const input = {
+            _id: 'ren',
+            name: 'Ren',
+            value: {
+                foo: 'bar'
+            }
+        };
+        const result = DummyModel.resultFactory(input);
+
+        lab.expect(result).to.be.an.instanceOf(DummyModel);
     });
 
 
@@ -348,6 +364,21 @@ lab.experiment('Helpers', () => {
     });
 
 
+    lab.test('it passes a fields document through', () => {
+
+        const fields = MongoModels.fieldsAdapter({
+            one: true,
+            two: false,
+            three: true
+        });
+
+        lab.expect(fields).to.be.an.object();
+        lab.expect(fields.one).to.equal(true);
+        lab.expect(fields.two).to.equal(false);
+        lab.expect(fields.three).to.equal(true);
+    });
+
+
     lab.test('it creates a sort document from a string', () => {
 
         const sort = MongoModels.sortAdapter('one -two three');
@@ -360,6 +391,21 @@ lab.experiment('Helpers', () => {
         const sort2 = MongoModels.sortAdapter('');
 
         lab.expect(Object.keys(sort2)).to.have.length(0);
+    });
+
+
+    lab.test('it passes a sort document through', () => {
+
+        const sort = MongoModels.sortAdapter({
+            one: 1,
+            two: -1,
+            three: 1
+        });
+
+        lab.expect(sort).to.be.an.object();
+        lab.expect(sort.one).to.equal(1);
+        lab.expect(sort.two).to.equal(-1);
+        lab.expect(sort.three).to.equal(1);
     });
 
 
@@ -480,7 +526,7 @@ lab.experiment('Paged find', () => {
     });
 
 
-    lab.test('it returns paged results where begin item is less than total', async () => {
+    lab.test('it returns paged results where begin item is less than total (and no options argument)', async () => {
 
         const documents = [
             { name: 'Ren' },
@@ -493,11 +539,8 @@ lab.experiment('Paged find', () => {
         const filter = { 'role.special': { $exists: true } };
         const limit = 2;
         const page = 1;
-        const options = {
-            sort: { _id: -1 }
-        };
         const result = await DummyModel.pagedFind(
-            filter, limit, page, options
+            filter, limit, page
         );
 
         lab.expect(result).to.be.an.object();
