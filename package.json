@@ -1,6 +1,6 @@
 {
   "name": "mongo-models",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "JavaScript class interfaces to MongoDB collections",
   "main": "index.js",
   "scripts": {
