@@ -1,7 +1,6 @@
 'use strict';
 
 const Hoek = require('@hapi/hoek');
-const Joi = require('@hapi/joi');
 const Mongodb = require('mongodb');
 
 
