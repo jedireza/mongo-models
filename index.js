@@ -1,7 +1,6 @@
 'use strict';
 
 const Hoek = require('@hapi/hoek');
-const Joi = require('@hapi/joi');
 const Mongodb = require('mongodb');
 
 
@@ -460,13 +459,13 @@ class MongoModels {
 
     static validate(input) {
 
-        return Joi.validate(input, this.schema);
+        return this.schema.validate(input);
     }
 
 
     validate() {
 
-        return Joi.validate(this, this.constructor.schema);
+        return this.constructor.schema.validate(this);
     }
 
 
