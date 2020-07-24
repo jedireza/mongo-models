@@ -48,7 +48,7 @@ class MongoModels {
 
     static async connect(connection, options = {}, name = 'default') {
 
-        options = Hoek.applyToDefaults({ useNewUrlParser : true }, options);
+        options = Hoek.applyToDefaults({ useNewUrlParser: true }, options);
 
         const client = await Mongodb.MongoClient.connect(connection.uri, options);
 
