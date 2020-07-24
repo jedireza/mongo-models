@@ -123,7 +123,7 @@ lab.experiment('Instance construction', () => {
                     bar: 'llabzrab',
                     baz: 'llabzzab'
                 };
-            }, 'default stuff')
+            }).description('default stuff')
         });
 
         const instance1 = new DummyModel({
